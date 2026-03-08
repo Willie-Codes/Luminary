@@ -1182,6 +1182,13 @@ nav.scrolled .nav-app-btn{border-color:rgba(255,255,255,.15);}
 .convo-inp::placeholder{color:rgba(255,255,255,.25);}
 .convo-send{background:var(--gold);color:var(--ink);border:none;border-radius:100px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:background .2s;}
 .convo-send:hover{background:var(--gold-l);}
+
+/* ─── OTP BOXES ─────────────────────────── */
+.otp-box{width:58px;height:66px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);border-radius:12px;font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--cream);text-align:center;outline:none;transition:border-color .2s,background .2s;caret-color:var(--gold);}
+.otp-box:focus{border-color:var(--gold);background:rgba(201,168,76,.08);}
+.otp-box.filled{border-color:var(--gold);}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+
 </style>
 </head>
 <body>
@@ -1767,6 +1774,25 @@ nav.scrolled .nav-app-btn{border-color:rgba(255,255,255,.15);}
       <p class="auth-foot">Already have an account? <span onclick="authTab('login')">Sign in</span></p>
     </div>
 
+    
+    <!-- OTP VERIFICATION -->
+    <div id="auth-otp" style="display:none">
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="font-size:40px;margin-bottom:10px;">📬</div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--cream);margin-bottom:8px;">Check your email</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.6;" id="otp-email-hint">We sent a 4-digit code.</div>
+      </div>
+      <div style="display:flex;gap:12px;justify-content:center;margin-bottom:18px;" id="otp-inputs">
+        <input class="otp-box" maxlength="1" type="text" inputmode="numeric" oninput="otpInput(this,0)" onkeydown="otpKey(event,0)"/>
+        <input class="otp-box" maxlength="1" type="text" inputmode="numeric" oninput="otpInput(this,1)" onkeydown="otpKey(event,1)"/>
+        <input class="otp-box" maxlength="1" type="text" inputmode="numeric" oninput="otpInput(this,2)" onkeydown="otpKey(event,2)"/>
+        <input class="otp-box" maxlength="1" type="text" inputmode="numeric" oninput="otpInput(this,3)" onkeydown="otpKey(event,3)"/>
+      </div>
+      <div id="auth-err-otp" class="auth-err" style="text-align:center;"></div>
+      <button class="auth-submit" id="otp-btn" onclick="verifyOtp()">Verify →</button>
+      <p class="auth-foot" style="margin-top:14px;">Didn't get it? <span onclick="resendOtp()">Resend code</span></p>
+    </div>
+
     <button class="auth-close" onclick="closeAuthGate()">✕</button>
   </div>
 </div>
@@ -1919,7 +1945,72 @@ nav.scrolled .nav-app-btn{border-color:rgba(255,255,255,.15);}
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+// ══════════════════════════════════════════════════
+//  OTP VERIFICATION
+// ══════════════════════════════════════════════════
+let otpEmail='',otpType='signup';
+
+function showOtpScreen(email){
+  otpEmail=email;
+  document.getElementById('auth-login').style.display='none';
+  document.getElementById('auth-signup').style.display='none';
+  document.getElementById('auth-tabs').style.display='none';
+  document.getElementById('auth-otp').style.display='';
+  document.getElementById('otp-email-hint').textContent='We sent a 4-digit code to '+email;
+  document.getElementById('auth-err-otp').textContent='';
+  document.querySelectorAll('.otp-box').forEach(b=>{b.value='';b.classList.remove('filled');});
+  setTimeout(()=>document.querySelectorAll('.otp-box')[0].focus(),100);
+}
+
+function otpInput(el,idx){
+  el.value=el.value.replace(/[^0-9]/g,'');
+  if(el.value){
+    el.classList.add('filled');
+    const boxes=document.querySelectorAll('.otp-box');
+    if(idx<3) boxes[idx+1].focus();
+    else setTimeout(verifyOtp,150);
+  } else { el.classList.remove('filled'); }
+}
+
+function otpKey(e,idx){
+  const boxes=document.querySelectorAll('.otp-box');
+  if(e.key==='Backspace'&&!boxes[idx].value&&idx>0){boxes[idx-1].focus();boxes[idx-1].value='';boxes[idx-1].classList.remove('filled');}
+  if(e.key==='ArrowLeft'&&idx>0) boxes[idx-1].focus();
+  if(e.key==='ArrowRight'&&idx<3) boxes[idx+1].focus();
+}
+
+async function verifyOtp(){
+  const boxes=document.querySelectorAll('.otp-box');
+  const token=[...boxes].map(b=>b.value).join('');
+  const err=document.getElementById('auth-err-otp');
+  const btn=document.getElementById('otp-btn');
+  if(token.length<4){err.textContent='Please enter all 4 digits.';return;}
+  btn.disabled=true;btn.textContent='Verifying…';err.textContent='';
+  const{error}=await sb.auth.verifyOtp({email:otpEmail,token:token,type:'email'});
+  btn.disabled=false;btn.textContent='Verify →';
+  if(error){
+    err.textContent=error.message.includes('expired')?'Code expired. Resend below.':'Invalid code. Try again.';
+    document.querySelectorAll('.otp-box').forEach(b=>{b.value='';b.classList.remove('filled');});
+    const inp=document.getElementById('otp-inputs');
+    inp.style.animation='shake .4s ease';
+    setTimeout(()=>inp.style.animation='',500);
+    document.querySelectorAll('.otp-box')[0].focus();
+    return;
+  }
+  closeAuthGate();
+  openApp();
+}
+
+async function resendOtp(){
+  const err=document.getElementById('auth-err-otp');
+  err.style.color='var(--gold)';err.textContent='Sending…';
+  const{error}=await sb.auth.resend({email:otpEmail,type:'signup'});
+  if(error){err.style.color='#e05050';err.textContent=error.message;}
+  else{err.textContent='✓ New code sent!';setTimeout(()=>{err.textContent='';err.style.color='#e05050';},4000);}
+}
+
+</script>
 <script>
 // ══════════════════════════════════════════════════
 //  LUMINARY — Full Supabase Integration
@@ -2078,8 +2169,8 @@ async function doLogin() {
   const { error } = await sb.auth.signInWithPassword({ email, password: pass });
   btn.disabled = false; btn.textContent = 'Sign In →';
   if (error) { err.textContent = error.message; return; }
-  closeAuthGate();
-  openApp();
+  otpType = 'signup';
+  showOtpScreen(email);
 }
 async function doSignup() {
   const name  = document.getElementById('signup-name').value.trim();
