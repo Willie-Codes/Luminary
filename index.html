@@ -1126,6 +1126,10 @@ nav.scrolled .nav-app-btn{border-color:rgba(255,255,255,.15);}
 .auth-foot span{color:var(--gold);cursor:pointer;}
 .auth-close{position:absolute;top:16px;right:20px;background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;transition:color .2s;}
 .auth-close:hover{color:var(--cream);}
+.auth-stay-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;cursor:pointer;}
+.auth-stay-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--gold);cursor:pointer;flex-shrink:0;}
+.auth-stay-row span{font-size:13px;color:var(--muted-l);}
+
 .app-loading{padding:40px;text-align:center;color:var(--muted);font-size:14px;}
 .app-empty{padding:40px;text-align:center;color:var(--muted);font-size:14px;}
 .app-filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
@@ -1182,13 +1186,6 @@ nav.scrolled .nav-app-btn{border-color:rgba(255,255,255,.15);}
 .convo-inp::placeholder{color:rgba(255,255,255,.25);}
 .convo-send{background:var(--gold);color:var(--ink);border:none;border-radius:100px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:background .2s;}
 .convo-send:hover{background:var(--gold-l);}
-
-/* ─── OTP BOXES ─────────────────────────── */
-.otp-box{width:58px;height:66px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);border-radius:12px;font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--cream);text-align:center;outline:none;transition:border-color .2s,background .2s;caret-color:var(--gold);}
-.otp-box:focus{border-color:var(--gold);background:rgba(201,168,76,.08);}
-.otp-box.filled{border-color:var(--gold);}
-@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
-
 </style>
 </head>
 <body>
@@ -1750,9 +1747,13 @@ nav.scrolled .nav-app-btn{border-color:rgba(255,255,255,.15);}
     <!-- LOGIN -->
     <div id="auth-login">
       <div class="auth-field-group">
-        <input class="auth-inp" id="login-email" type="email" placeholder="Email address"/>
-        <input class="auth-inp" id="login-pass"  type="password" placeholder="Password"/>
+        <input class="auth-inp" id="login-email" type="email" placeholder="Email address" onkeydown="if(event.key==='Enter')doLogin()"/>
+        <input class="auth-inp" id="login-pass"  type="password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"/>
       </div>
+      <label class="auth-stay-row">
+        <input type="checkbox" id="login-stay" checked/>
+        <span>Stay signed in on this device</span>
+      </label>
       <div id="auth-err-login" class="auth-err"></div>
       <button class="auth-submit" id="login-btn" onclick="doLogin()">Sign In →</button>
       <p class="auth-foot">Don't have an account? <span onclick="authTab('signup')">Create one free</span></p>
@@ -1761,9 +1762,9 @@ nav.scrolled .nav-app-btn{border-color:rgba(255,255,255,.15);}
     <!-- SIGNUP -->
     <div id="auth-signup" style="display:none">
       <div class="auth-field-group">
-        <input class="auth-inp" id="signup-name"  type="text"     placeholder="Full name"/>
-        <input class="auth-inp" id="signup-email" type="email"    placeholder="Email address"/>
-        <input class="auth-inp" id="signup-pass"  type="password" placeholder="Password (min 6 chars)"/>
+        <input class="auth-inp" id="signup-name"  type="text"     placeholder="Full name" onkeydown="if(event.key==='Enter')doSignup()"/>
+        <input class="auth-inp" id="signup-email" type="email"    placeholder="Email address" onkeydown="if(event.key==='Enter')doSignup()"/>
+        <input class="auth-inp" id="signup-pass"  type="password" placeholder="Password (min 6 chars)" onkeydown="if(event.key==='Enter')doSignup()"/>
       </div>
       <div class="auth-role-row">
         <div class="auth-role-pill active" id="arp-student" onclick="setAuthRole('student')">🎓 Student</div>
@@ -1772,25 +1773,6 @@ nav.scrolled .nav-app-btn{border-color:rgba(255,255,255,.15);}
       <div id="auth-err-signup" class="auth-err"></div>
       <button class="auth-submit" id="signup-btn" onclick="doSignup()">Create Account →</button>
       <p class="auth-foot">Already have an account? <span onclick="authTab('login')">Sign in</span></p>
-    </div>
-
-    
-    <!-- OTP VERIFICATION -->
-    <div id="auth-otp" style="display:none">
-      <div style="text-align:center;margin-bottom:20px;">
-        <div style="font-size:40px;margin-bottom:10px;">📬</div>
-        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--cream);margin-bottom:8px;">Check your email</div>
-        <div style="font-size:13px;color:var(--muted);line-height:1.6;" id="otp-email-hint">We sent a 4-digit code.</div>
-      </div>
-      <div style="display:flex;gap:12px;justify-content:center;margin-bottom:18px;" id="otp-inputs">
-        <input class="otp-box" maxlength="1" type="text" inputmode="numeric" oninput="otpInput(this,0)" onkeydown="otpKey(event,0)"/>
-        <input class="otp-box" maxlength="1" type="text" inputmode="numeric" oninput="otpInput(this,1)" onkeydown="otpKey(event,1)"/>
-        <input class="otp-box" maxlength="1" type="text" inputmode="numeric" oninput="otpInput(this,2)" onkeydown="otpKey(event,2)"/>
-        <input class="otp-box" maxlength="1" type="text" inputmode="numeric" oninput="otpInput(this,3)" onkeydown="otpKey(event,3)"/>
-      </div>
-      <div id="auth-err-otp" class="auth-err" style="text-align:center;"></div>
-      <button class="auth-submit" id="otp-btn" onclick="verifyOtp()">Verify →</button>
-      <p class="auth-foot" style="margin-top:14px;">Didn't get it? <span onclick="resendOtp()">Resend code</span></p>
     </div>
 
     <button class="auth-close" onclick="closeAuthGate()">✕</button>
@@ -1945,72 +1927,7 @@ nav.scrolled .nav-app-btn{border-color:rgba(255,255,255,.15);}
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-// ══════════════════════════════════════════════════
-//  OTP VERIFICATION
-// ══════════════════════════════════════════════════
-let otpEmail='',otpType='signup';
-
-function showOtpScreen(email){
-  otpEmail=email;
-  document.getElementById('auth-login').style.display='none';
-  document.getElementById('auth-signup').style.display='none';
-  document.getElementById('auth-tabs').style.display='none';
-  document.getElementById('auth-otp').style.display='';
-  document.getElementById('otp-email-hint').textContent='We sent a 4-digit code to '+email;
-  document.getElementById('auth-err-otp').textContent='';
-  document.querySelectorAll('.otp-box').forEach(b=>{b.value='';b.classList.remove('filled');});
-  setTimeout(()=>document.querySelectorAll('.otp-box')[0].focus(),100);
-}
-
-function otpInput(el,idx){
-  el.value=el.value.replace(/[^0-9]/g,'');
-  if(el.value){
-    el.classList.add('filled');
-    const boxes=document.querySelectorAll('.otp-box');
-    if(idx<3) boxes[idx+1].focus();
-    else setTimeout(verifyOtp,150);
-  } else { el.classList.remove('filled'); }
-}
-
-function otpKey(e,idx){
-  const boxes=document.querySelectorAll('.otp-box');
-  if(e.key==='Backspace'&&!boxes[idx].value&&idx>0){boxes[idx-1].focus();boxes[idx-1].value='';boxes[idx-1].classList.remove('filled');}
-  if(e.key==='ArrowLeft'&&idx>0) boxes[idx-1].focus();
-  if(e.key==='ArrowRight'&&idx<3) boxes[idx+1].focus();
-}
-
-async function verifyOtp(){
-  const boxes=document.querySelectorAll('.otp-box');
-  const token=[...boxes].map(b=>b.value).join('');
-  const err=document.getElementById('auth-err-otp');
-  const btn=document.getElementById('otp-btn');
-  if(token.length<4){err.textContent='Please enter all 4 digits.';return;}
-  btn.disabled=true;btn.textContent='Verifying…';err.textContent='';
-  const{error}=await sb.auth.verifyOtp({email:otpEmail,token:token,type:'email'});
-  btn.disabled=false;btn.textContent='Verify →';
-  if(error){
-    err.textContent=error.message.includes('expired')?'Code expired. Resend below.':'Invalid code. Try again.';
-    document.querySelectorAll('.otp-box').forEach(b=>{b.value='';b.classList.remove('filled');});
-    const inp=document.getElementById('otp-inputs');
-    inp.style.animation='shake .4s ease';
-    setTimeout(()=>inp.style.animation='',500);
-    document.querySelectorAll('.otp-box')[0].focus();
-    return;
-  }
-  closeAuthGate();
-  openApp();
-}
-
-async function resendOtp(){
-  const err=document.getElementById('auth-err-otp');
-  err.style.color='var(--gold)';err.textContent='Sending…';
-  const{error}=await sb.auth.resend({email:otpEmail,type:'signup'});
-  if(error){err.style.color='#e05050';err.textContent=error.message;}
-  else{err.textContent='✓ New code sent!';setTimeout(()=>{err.textContent='';err.style.color='#e05050';},4000);}
-}
-
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ══════════════════════════════════════════════════
 //  LUMINARY — Full Supabase Integration
@@ -2159,37 +2076,70 @@ function setAuthRole(r) {
   document.getElementById('arp-tutor').classList.toggle('active',   r === 'tutor');
 }
 async function doLogin() {
-  const email = document.getElementById('login-email').value.trim();
-  const pass  = document.getElementById('login-pass').value;
-  const err   = document.getElementById('auth-err-login');
-  const btn   = document.getElementById('login-btn');
+  const email  = document.getElementById('login-email').value.trim();
+  const pass   = document.getElementById('login-pass').value;
+  const stayIn = document.getElementById('login-stay')?.checked ?? true;
+  const err    = document.getElementById('auth-err-login');
+  const btn    = document.getElementById('login-btn');
   err.textContent = '';
   if (!email || !pass) { err.textContent = 'Please fill in all fields.'; return; }
   btn.disabled = true; btn.textContent = 'Signing in…';
-  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
   btn.disabled = false; btn.textContent = 'Sign In →';
-  if (error) { err.textContent = error.message; return; }
-  otpType = 'signup';
-  showOtpScreen(email);
+  if (error) {
+    // Make error message friendlier
+    if (error.message.includes('Invalid login') || error.message.includes('invalid_credentials')) {
+      err.textContent = 'Incorrect email or password. Please try again.';
+    } else if (error.message.includes('Email not confirmed')) {
+      err.textContent = 'Please check your email and click the confirmation link first.';
+    } else {
+      err.textContent = error.message;
+    }
+    return;
+  }
+  appUser = data.user;
+  await loadProfile();
+  refreshNavState();
+  closeAuthGate();
+  openApp();
 }
 async function doSignup() {
-  const name  = document.getElementById('signup-name').value.trim();
-  const email = document.getElementById('signup-email').value.trim();
-  const pass  = document.getElementById('signup-pass').value;
-  const err   = document.getElementById('auth-err-signup');
-  const btn   = document.getElementById('signup-btn');
+  const name     = document.getElementById('signup-name').value.trim();
+  const email    = document.getElementById('signup-email').value.trim();
+  const pass     = document.getElementById('signup-pass').value;
+  const stayIn   = true; // signup always stays signed in
+  const err      = document.getElementById('auth-err-signup');
+  const btn      = document.getElementById('signup-btn');
   err.textContent = '';
   if (!name || !email || !pass) { err.textContent = 'Please fill in all fields.'; return; }
   if (pass.length < 6) { err.textContent = 'Password must be at least 6 characters.'; return; }
   btn.disabled = true; btn.textContent = 'Creating account…';
-  const { error } = await sb.auth.signUp({
+
+  // Disable email confirmation so users can log straight in
+  const { data, error } = await sb.auth.signUp({
     email, password: pass,
-    options: { data: { full_name: name, role: signupRole } }
+    options: {
+      data: { full_name: name, role: signupRole },
+      emailRedirectTo: window.location.href
+    }
   });
   btn.disabled = false; btn.textContent = 'Create Account →';
   if (error) { err.textContent = error.message; return; }
-  closeAuthGate();
-  openApp();
+
+  // If session exists immediately, they are in (email confirmation disabled in Supabase)
+  if (data.session) {
+    appUser = data.user;
+    await loadProfile();
+    refreshNavState();
+    closeAuthGate();
+    openApp();
+  } else {
+    // Email confirmation required — show friendly message
+    err.style.color = '#3a9e67';
+    err.textContent = '✓ Account created! Check your email to confirm, then sign in.';
+    btn.textContent = 'Create Account →';
+    setTimeout(() => authTab('login'), 3000);
+  }
 }
 
 // ══════════════════════════════════════════════════
@@ -2391,20 +2341,27 @@ async function confirmBooking(tutorId, rate) {
 // ══════════════════════════════════════════════════
 async function loadMessages() {
   const { data, error } = await sb.from('messages')
-    .select('*, tutor:tutor_id(id, name, emoji, bg_gradient)')
-    .or(`sender_id.eq.${appUser.id},recipient_id.eq.${appUser.id}`)
+    .select('*')
+    .eq('sender_id', appUser.id)
+    .not('tutor_id', 'is', null)
     .order('created_at', { ascending: false });
 
-  if (error) { document.getElementById('msg-list-wrap').innerHTML = '<div class="app-empty">Could not load messages.</div>'; return; }
+  if (error) {
+    console.error('loadMessages error:', error);
+    document.getElementById('msg-list-wrap').innerHTML = '<div class="app-empty">Could not load messages.</div>';
+    return;
+  }
 
-  // Group by tutor
+  // Group by tutor_id, enrich with allTutors cache
   const byTutor = {};
   (data || []).forEach(m => {
     const tid = m.tutor_id;
-    if (!tid) return;
-    if (!byTutor[tid]) byTutor[tid] = { tutor: m.tutor, messages: [], unread: 0 };
+    if (!byTutor[tid]) {
+      const tutorInfo = allTutors.find(t => t.id === tid) || { id: tid, name: 'Tutor', emoji: '🌟', bg_gradient: 'linear-gradient(135deg,#1a3a5c,#0e2238)' };
+      byTutor[tid] = { tutor: tutorInfo, messages: [], unread: 0 };
+    }
     byTutor[tid].messages.push(m);
-    if (!m.read && m.recipient_id === appUser.id) byTutor[tid].unread++;
+    if (!m.read) byTutor[tid].unread++;
   });
 
   const convos = Object.values(byTutor);
@@ -2460,10 +2417,10 @@ async function openConvoWith(tutorId, tutorName) {
   const cv = document.getElementById('convo-view');
   cv.style.display = 'flex';
   await loadConvoMessages();
-  // Mark messages as read
+  // Mark messages as read (sender owns them)
   await sb.from('messages')
     .update({ read: true })
-    .eq('recipient_id', appUser.id)
+    .eq('sender_id', appUser.id)
     .eq('tutor_id', tutorId);
   loadMessages();
 }
@@ -2476,11 +2433,12 @@ function closeConvo() {
 }
 
 async function loadConvoMessages() {
-  const { data } = await sb.from('messages')
+  const { data, error } = await sb.from('messages')
     .select('*')
     .eq('tutor_id', activeConvoTutorId)
-    .or(`sender_id.eq.${appUser.id},recipient_id.eq.${appUser.id}`)
+    .eq('sender_id', appUser.id)
     .order('created_at', { ascending: true });
+  if (error) { console.error('loadConvoMessages error:', error); }
 
   const box = document.getElementById('convo-messages');
   if (!data || !data.length) { box.innerHTML = '<div class="app-empty" style="padding:20px;font-size:12px;">Send the first message!</div>'; return; }
@@ -2500,12 +2458,14 @@ async function sendMessage() {
   const content = inp.value.trim();
   if (!content || !activeConvoTutorId) return;
   inp.value = '';
-  await sb.from('messages').insert({
+  const { error } = await sb.from('messages').insert({
     sender_id: appUser.id,
-    recipient_id: appUser.id, // self for now; real tutors would have user_id
+    recipient_id: appUser.id,
     tutor_id: activeConvoTutorId,
-    content
+    content,
+    read: true
   });
+  if (error) { console.error('Message send error:', error); return; }
   await loadConvoMessages();
 }
 
@@ -2523,11 +2483,15 @@ function filterMessages() {
 // ══════════════════════════════════════════════════
 async function loadSessions() {
   const { data, error } = await sb.from('sessions')
-    .select('*, tutor:tutor_id(id, name, emoji, bg_gradient, subjects)')
+    .select('*')
     .eq('student_id', appUser.id)
     .order('scheduled_at', { ascending: true });
 
-  if (error) { document.getElementById('sessions-list').innerHTML = '<div class="app-empty">Could not load sessions.</div>'; return; }
+  if (error) {
+    console.error('loadSessions error:', error);
+    document.getElementById('sessions-list').innerHTML = '<div class="app-empty">Could not load sessions. Check console for details.</div>';
+    return;
+  }
   renderSessions(data || []);
 }
 
@@ -2540,21 +2504,22 @@ function sesTab(filter, el) {
 
 function renderSessions(sessions) {
   const list = document.getElementById('sessions-list');
-  const filtered = sessions.filter(s => s.status === sesFilter);
+  const filtered = sessions.filter(s => sesFilter === 'upcoming' ? s.status === 'upcoming' : s.status !== 'upcoming');
   if (!filtered.length) {
-    list.innerHTML = `<div class="app-empty">${sesFilter === 'upcoming' ? 'No upcoming sessions. Book one below!' : 'No completed sessions yet.'}</div>`;
+    list.innerHTML = `<div class="app-empty">${sesFilter === 'upcoming' ? 'No upcoming sessions. Book one below!' : 'No past sessions yet.'}</div>`;
     return;
   }
   list.innerHTML = filtered.map(s => {
+    const tutor = allTutors.find(t => t.id === s.tutor_id) || {};
     const dt = new Date(s.scheduled_at);
     const dateStr = dt.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
     const timeStr = dt.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
     const isUpcoming = s.status === 'upcoming';
     return `
       <div class="app-sess-card" style="${!isUpcoming ? 'opacity:.6' : ''}">
-        <div class="app-sess-av" style="background:${s.tutor?.bg_gradient || '#1a3a5c'}">${s.tutor?.emoji || '🌟'}</div>
+        <div class="app-sess-av" style="background:${tutor.bg_gradient || '#1a3a5c'}">${tutor.emoji || '🌟'}</div>
         <div class="app-sess-info">
-          <div class="app-sess-name">${s.tutor?.name || 'Tutor'} — ${s.subject || ''}</div>
+          <div class="app-sess-name">${tutor.name || 'Tutor'} — ${s.subject || ''}</div>
           <div class="app-sess-detail">
             <span>📅 ${dateStr}</span>
             <span>⏰ ${timeStr}</span>
@@ -2562,7 +2527,7 @@ function renderSessions(sessions) {
           </div>
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
-          <div class="app-sess-status" style="${!isUpcoming ? 'background:rgba(45,122,79,.1);color:#3a9e67;' : ''}">${isUpcoming ? 'Upcoming' : 'Completed'}</div>
+          <div class="app-sess-status" style="${s.status === 'completed' ? 'background:rgba(45,122,79,.1);color:#3a9e67;' : s.status === 'cancelled' ? 'background:rgba(192,57,43,.1);color:#e05050;' : ''}">${s.status === 'completed' ? 'Completed' : s.status === 'cancelled' ? 'Cancelled' : 'Upcoming'}</div>
           ${isUpcoming ? `<button class="app-sess-book" style="font-size:10px;padding:6px 12px;" onclick="cancelSession('${s.id}')">Cancel</button>` : ''}
         </div>
       </div>`;
