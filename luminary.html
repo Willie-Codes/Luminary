@@ -1,0 +1,2638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Luminary — Learning that actually works.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0e0c0a;
+  --cream:#f5f0e8;
+  --cream-d:#ede7d8;
+  --gold:#c9a84c;
+  --gold-l:#e8c97a;
+  --gold-d:#a07820;
+  --muted:#7a7060;
+  --muted-l:#b0a898;
+  --white:#ffffff;
+  --red:#c0392b;
+  --green:#2d7a4f;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--ink);
+  color:var(--cream);
+  overflow-x:hidden;
+  cursor:none;
+}
+
+/* ─── CURSOR ─────────────────────────────────────── */
+.cursor{
+  position:fixed;
+  width:13px;height:13px;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:99999;
+  transform:translate(-50%,-50%);
+  background-color:#e8d97a;
+  border:1.5px solid #e8d97a;
+  transition:background-color .18s ease, border-color .18s ease;
+}
+
+/* ─── NOISE OVERLAY ──────────────────────────────── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:1000;opacity:.4;
+}
+
+/* ─── NAV ────────────────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  padding:24px 60px;
+  display:flex;align-items:center;justify-content:space-between;
+  transition:background .4s,padding .3s,backdrop-filter .4s;
+}
+nav.scrolled{
+  background:rgba(14,12,10,.85);
+  backdrop-filter:blur(16px);
+  padding:16px 60px;
+  border-bottom:1px solid rgba(201,168,76,.12);
+}
+.nav-logo{
+  font-family:'Playfair Display',serif;
+  font-size:13px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--gold);text-decoration:none;
+}
+.nav-links{display:flex;align-items:center;gap:40px}
+.nav-links a{
+  font-size:13px;font-weight:500;letter-spacing:.06em;
+  color:var(--muted-l);text-decoration:none;
+  transition:color .2s;
+}
+.nav-links a:hover{color:var(--cream)}
+.nav-cta{
+  background:var(--gold);color:var(--ink);
+  border:none;border-radius:3px;
+  padding:12px 28px;font-family:'DM Sans',sans-serif;
+  font-size:13px;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;cursor:pointer;
+  transition:background .2s,transform .15s;
+  text-decoration:none;display:inline-block;
+}
+.nav-cta:hover{background:var(--gold-l);transform:translateY(-1px)}
+
+/* ─── HERO ───────────────────────────────────────── */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:120px 60px 80px;
+  position:relative;overflow:hidden;
+  text-align:center;
+}
+.hero-glow{
+  position:absolute;top:-200px;left:50%;transform:translateX(-50%);
+  width:800px;height:800px;
+  background:radial-gradient(ellipse,rgba(201,168,76,.1) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-glow2{
+  position:absolute;bottom:-300px;right:-200px;
+  width:600px;height:600px;
+  background:radial-gradient(ellipse,rgba(45,122,79,.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  background:rgba(201,168,76,.1);
+  border:1px solid rgba(201,168,76,.25);
+  border-radius:100px;padding:8px 20px;
+  font-size:11px;font-weight:600;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--gold);
+  margin-bottom:36px;
+  animation:fadeUp .8s ease both;
+}
+.hero-eyebrow::before{
+  content:'';width:6px;height:6px;border-radius:50%;
+  background:var(--gold);animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+.hero h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(52px,7vw,96px);
+  font-weight:900;line-height:1.02;
+  letter-spacing:-.02em;
+  max-width:900px;margin:0 auto 28px;
+  animation:fadeUp .9s .1s ease both;
+}
+.hero h1 em{font-style:italic;color:var(--gold)}
+.hero p{
+  font-size:clamp(16px,1.8vw,20px);
+  color:var(--muted-l);line-height:1.7;
+  max-width:540px;margin:0 auto 52px;
+  animation:fadeUp .9s .2s ease both;
+}
+.hero-actions{
+  display:flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:center;
+  animation:fadeUp .9s .3s ease both;
+}
+.btn-primary{
+  background:var(--gold);color:var(--ink);
+  border:none;border-radius:3px;
+  padding:18px 40px;font-family:'DM Sans',sans-serif;
+  font-size:14px;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;cursor:pointer;
+  transition:all .25s;text-decoration:none;
+  display:inline-block;
+}
+.btn-primary:hover{background:var(--gold-l);transform:translateY(-2px);box-shadow:0 12px 32px rgba(201,168,76,.25)}
+.btn-ghost-hero{
+  background:transparent;color:var(--cream);
+  border:1.5px solid rgba(255,255,255,.18);
+  border-radius:3px;padding:18px 40px;
+  font-family:'DM Sans',sans-serif;font-size:14px;
+  font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  cursor:pointer;transition:all .25s;text-decoration:none;display:inline-block;
+}
+.btn-ghost-hero:hover{border-color:var(--gold);color:var(--gold)}
+.hero-stats{
+  display:flex;align-items:center;gap:48px;
+  margin-top:72px;padding-top:48px;
+  border-top:1px solid rgba(255,255,255,.07);
+  animation:fadeUp .9s .45s ease both;
+}
+.hero-stat-num{
+  font-family:'Playfair Display',serif;
+  font-size:36px;font-weight:700;color:var(--cream);
+}
+.hero-stat-num span{color:var(--gold)}
+.hero-stat-lbl{font-size:12px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:4px}
+.hero-divider{width:1px;height:48px;background:rgba(255,255,255,.1)}
+
+/* ─── MARQUEE ────────────────────────────────────── */
+.marquee-wrap{
+  padding:28px 0;
+  border-top:1px solid rgba(255,255,255,.06);
+  border-bottom:1px solid rgba(255,255,255,.06);
+  overflow:hidden;background:rgba(255,255,255,.02);
+}
+.marquee-track{
+  display:flex;gap:64px;
+  animation:marquee 25s linear infinite;
+  white-space:nowrap;
+}
+.marquee-item{
+  font-family:'Playfair Display',serif;
+  font-size:13px;font-style:italic;
+  color:var(--muted);letter-spacing:.06em;
+  flex-shrink:0;display:flex;align-items:center;gap:20px;
+}
+.marquee-item::after{content:'✦';color:var(--gold);font-size:9px;font-style:normal}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ─── HOW IT WORKS ───────────────────────────────── */
+.section{padding:120px 60px}
+.section-inner{max-width:1200px;margin:0 auto}
+.section-label{
+  font-size:11px;font-weight:700;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--gold);
+  margin-bottom:20px;display:flex;align-items:center;gap:12px;
+}
+.section-label::before{
+  content:'';width:28px;height:1px;background:var(--gold);
+}
+.section-title{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(36px,4vw,58px);
+  font-weight:700;line-height:1.1;
+  margin-bottom:16px;
+}
+.section-title em{font-style:italic;color:var(--gold)}
+.section-sub{
+  font-size:17px;color:var(--muted-l);
+  line-height:1.7;max-width:520px;
+}
+
+/* Steps */
+.steps-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:2px;margin-top:64px;
+}
+.step{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);
+  padding:52px 44px;position:relative;
+  transition:background .3s,border-color .3s;
+  overflow:hidden;
+}
+.step:first-child{border-radius:4px 0 0 4px}
+.step:last-child{border-radius:0 4px 4px 0}
+.step::before{
+  content:'';position:absolute;top:0;left:0;right:0;
+  height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  opacity:0;transition:opacity .3s;
+}
+.step:hover{background:rgba(201,168,76,.05);border-color:rgba(201,168,76,.2)}
+.step:hover::before{opacity:1}
+.step-num{
+  font-family:'Playfair Display',serif;
+  font-size:60px;font-weight:900;
+  color:rgba(201,168,76,.12);
+  line-height:1;margin-bottom:24px;
+  transition:color .3s;
+}
+.step:hover .step-num{color:rgba(201,168,76,.25)}
+.step h3{
+  font-family:'Playfair Display',serif;
+  font-size:22px;font-weight:700;
+  margin-bottom:14px;line-height:1.2;
+}
+.step p{font-size:14px;color:var(--muted-l);line-height:1.7}
+
+/* ─── TUTORS SHOWCASE ────────────────────────────── */
+.tutors-section{
+  padding:0 60px 120px;
+}
+.tutors-inner{max-width:1200px;margin:0 auto}
+.tutors-header{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  margin-bottom:52px;flex-wrap:wrap;gap:24px;
+}
+.tutors-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:20px;
+}
+.tutor-card{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;overflow:hidden;
+  cursor:pointer;transition:all .3s;
+  group:true;
+}
+.tutor-card:hover{
+  transform:translateY(-6px);
+  border-color:rgba(201,168,76,.3);
+  box-shadow:0 24px 60px rgba(0,0,0,.4);
+}
+.tutor-card-media{
+  height:220px;position:relative;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.tutor-emoji-bg{
+  font-size:72px;
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.tutor-card-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(14,12,10,.85),transparent 55%);
+}
+.tutor-card-name{
+  position:absolute;bottom:18px;left:20px;
+  font-family:'Playfair Display',serif;
+  font-size:22px;font-weight:700;color:white;
+}
+.tutor-card-rating{
+  position:absolute;top:14px;right:14px;
+  background:var(--gold);color:var(--ink);
+  font-size:11px;font-weight:700;
+  padding:5px 12px;border-radius:100px;
+}
+.tutor-card-body{padding:22px 20px}
+.tutor-subjects{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.tutor-subject{
+  background:rgba(255,255,255,.06);color:var(--muted-l);
+  font-size:10px;font-weight:700;padding:4px 10px;
+  border-radius:3px;letter-spacing:.1em;text-transform:uppercase;
+}
+.tutor-meta{display:flex;justify-content:space-between;align-items:center}
+.tutor-rate{
+  font-family:'Playfair Display',serif;
+  font-size:24px;font-weight:700;
+}
+.tutor-rate span{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:400;color:var(--muted)}
+.tutor-stars{color:var(--gold);font-size:12px;letter-spacing:2px}
+.tutor-bio{
+  font-size:13px;color:var(--muted-l);line-height:1.6;
+  margin-top:12px;padding-top:12px;
+  border-top:1px solid rgba(255,255,255,.06);
+}
+
+/* ─── SPLIT FEATURE ──────────────────────────────── */
+.feature-split{
+  padding:120px 60px;
+  background:var(--cream);color:var(--ink);
+  position:relative;overflow:hidden;
+}
+.feature-split::before{
+  content:'';position:absolute;top:-1px;left:0;right:0;height:80px;
+  background:var(--ink);border-radius:0 0 60px 60px;
+}
+.feature-split-inner{
+  max-width:1200px;margin:0 auto;
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:80px;align-items:center;
+}
+.feature-split .section-label{color:var(--gold-d)}
+.feature-split .section-title{color:var(--ink)}
+.feature-split .section-sub{color:var(--muted)}
+.feature-list{display:flex;flex-direction:column;gap:20px;margin-top:40px}
+.feature-item{
+  display:flex;gap:18px;align-items:flex-start;
+  padding:20px 22px;background:white;
+  border-radius:10px;border:1.5px solid var(--cream-d);
+  transition:border-color .2s,box-shadow .2s;
+}
+.feature-item:hover{border-color:var(--gold);box-shadow:0 8px 24px rgba(0,0,0,.07)}
+.feature-icon{
+  width:44px;height:44px;border-radius:10px;
+  background:rgba(201,168,76,.1);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.feature-text h4{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.feature-text p{font-size:13px;color:var(--muted);line-height:1.6}
+.feature-visual{
+  background:var(--ink);border-radius:20px;
+  overflow:hidden;position:relative;
+  aspect-ratio:1/1.1;
+  display:flex;flex-direction:column;
+  box-shadow:0 40px 80px rgba(0,0,0,.2);
+}
+.fv-header{
+  background:rgba(255,255,255,.05);
+  padding:18px 22px;display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.fv-avatar{
+  width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),#a07820);
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+}
+.fv-name{font-size:14px;font-weight:700;color:var(--cream)}
+.fv-sub{font-size:11px;color:var(--muted)}
+.fv-body{padding:22px;flex:1;display:flex;flex-direction:column;gap:14px}
+.fv-bubble{
+  max-width:80%;padding:12px 16px;border-radius:16px;
+  font-size:13px;line-height:1.5;
+}
+.fv-bubble.them{
+  background:rgba(255,255,255,.08);color:var(--cream);
+  border-radius:4px 16px 16px 16px;align-self:flex-start;
+}
+.fv-bubble.me{
+  background:var(--gold);color:var(--ink);font-weight:500;
+  border-radius:16px 4px 16px 16px;align-self:flex-end;
+}
+.fv-cal{
+  margin-top:auto;background:rgba(255,255,255,.05);
+  border-radius:12px;padding:16px;
+}
+.fv-cal-title{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.fv-dates{display:flex;gap:8px}
+.fv-date{
+  flex:1;padding:10px 6px;border-radius:8px;
+  text-align:center;border:1.5px solid rgba(255,255,255,.1);
+  cursor:pointer;transition:all .2s;
+}
+.fv-date.active{background:var(--gold);border-color:var(--gold)}
+.fv-date .fd{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.fv-date.active .fd{color:var(--ink)}
+.fv-date .fn{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--cream)}
+.fv-date.active .fn{color:var(--ink)}
+
+/* ─── PRICING ────────────────────────────────────── */
+.pricing-section{
+  padding:120px 60px;
+  background:var(--cream);color:var(--ink);
+}
+.pricing-inner{max-width:1100px;margin:0 auto}
+.pricing-header{text-align:center;margin-bottom:64px}
+.pricing-header .section-label{justify-content:center}
+.pricing-header .section-label::before{display:none}
+.pricing-header .section-title{color:var(--ink)}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.price-card{
+  background:white;border:1.5px solid var(--cream-d);
+  border-radius:14px;padding:36px 32px;
+  position:relative;transition:all .3s;
+}
+.price-card:hover{box-shadow:0 20px 50px rgba(0,0,0,.1);transform:translateY(-4px)}
+.price-card.featured{
+  background:var(--ink);color:var(--cream);
+  border-color:var(--gold);
+  transform:translateY(-12px);
+}
+.price-card.featured:hover{transform:translateY(-18px)}
+.price-badge{
+  position:absolute;top:-1px;right:20px;
+  background:var(--gold);color:var(--ink);
+  font-size:10px;font-weight:700;padding:5px 14px;
+  border-radius:0 0 8px 8px;letter-spacing:.1em;text-transform:uppercase;
+}
+.price-tier{
+  font-size:11px;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:8px;
+}
+.price-amount{
+  font-family:'Playfair Display',serif;
+  font-size:48px;font-weight:700;line-height:1;
+  margin-bottom:4px;
+}
+.price-card.featured .price-amount{color:var(--cream)}
+.price-period{font-size:13px;color:var(--muted);margin-bottom:8px}
+.price-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:28px}
+.price-card.featured .price-desc{color:rgba(255,255,255,.55)}
+.price-divider{
+  height:1px;background:var(--cream-d);
+  margin-bottom:24px;
+}
+.price-card.featured .price-divider{background:rgba(255,255,255,.1)}
+.price-perks{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+.price-perk{
+  display:flex;gap:12px;align-items:center;
+  font-size:13px;color:#444;
+}
+.price-card.featured .price-perk{color:rgba(255,255,255,.7)}
+.perk-check{color:var(--gold);font-weight:700;font-size:14px;flex-shrink:0}
+.btn-price{
+  width:100%;border:none;border-radius:6px;
+  padding:16px 24px;font-family:'DM Sans',sans-serif;
+  font-size:14px;font-weight:700;letter-spacing:.04em;
+  cursor:pointer;transition:all .2s;
+}
+.btn-price-light{background:var(--ink);color:var(--cream)}
+.btn-price-light:hover{background:#222}
+.btn-price-gold{background:var(--gold);color:var(--ink)}
+.btn-price-gold:hover{background:var(--gold-l)}
+.btn-price-outline{
+  background:transparent;color:var(--ink);
+  border:1.5px solid var(--cream-d) !important;
+}
+.btn-price-outline:hover{border-color:var(--gold) !important;color:var(--gold-d)}
+
+/* ─── TESTIMONIALS ───────────────────────────────── */
+.testimonials-section{
+  padding:120px 60px;
+  background:var(--ink);
+}
+.testimonials-inner{max-width:1200px;margin:0 auto}
+.testimonials-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:20px;margin-top:60px;
+}
+.testi-card{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;padding:32px;
+  position:relative;transition:all .3s;
+}
+.testi-card:hover{
+  background:rgba(201,168,76,.06);
+  border-color:rgba(201,168,76,.2);
+}
+.testi-stars{color:var(--gold);font-size:14px;letter-spacing:3px;margin-bottom:18px}
+.testi-quote{
+  font-family:'Playfair Display',serif;
+  font-size:17px;font-style:italic;line-height:1.6;
+  color:var(--cream);margin-bottom:24px;
+}
+.testi-quote::before{
+  content:'"';font-size:48px;color:var(--gold);
+  line-height:0;vertical-align:-18px;margin-right:4px;
+  font-style:normal;
+}
+.testi-author{display:flex;align-items:center;gap:12px}
+.testi-avatar{
+  width:40px;height:40px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--gold-d));
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;
+}
+.testi-name{font-size:14px;font-weight:700;color:var(--cream)}
+.testi-detail{font-size:12px;color:var(--muted)}
+
+/* ─── CTA BAND ───────────────────────────────────── */
+.cta-band{
+  padding:120px 60px;
+  background:var(--cream);color:var(--ink);
+  position:relative;overflow:hidden;
+}
+.cta-band::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:80px;
+  background:var(--ink);border-radius:0 0 60px 60px;
+}
+.cta-band::after{
+  content:'';position:absolute;
+  bottom:-200px;right:-200px;width:500px;height:500px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(201,168,76,.1),transparent 70%);
+}
+.cta-inner{
+  max-width:800px;margin:0 auto;text-align:center;
+  position:relative;
+}
+.cta-inner h2{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(40px,5vw,72px);
+  font-weight:900;line-height:1.06;
+  color:var(--ink);margin-bottom:20px;
+}
+.cta-inner h2 em{font-style:italic;color:var(--gold)}
+.cta-inner p{
+  font-size:18px;color:var(--muted);line-height:1.7;
+  margin-bottom:44px;max-width:500px;margin-left:auto;margin-right:auto;
+}
+.cta-buttons{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.btn-ink{
+  background:var(--ink);color:var(--cream);
+  border:none;border-radius:3px;
+  padding:18px 40px;font-family:'DM Sans',sans-serif;
+  font-size:14px;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;cursor:pointer;transition:all .25s;
+  text-decoration:none;display:inline-block;
+}
+.btn-ink:hover{background:#222;transform:translateY(-2px)}
+.btn-outline-ink{
+  background:transparent;color:var(--ink);
+  border:1.5px solid rgba(14,12,10,.25);
+  border-radius:3px;padding:18px 40px;
+  font-family:'DM Sans',sans-serif;font-size:14px;
+  font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  cursor:pointer;transition:all .25s;text-decoration:none;display:inline-block;
+}
+.btn-outline-ink:hover{border-color:var(--gold-d);color:var(--gold-d)}
+
+/* ─── FOOTER ─────────────────────────────────────── */
+footer{
+  background:var(--ink);padding:72px 60px 40px;
+  border-top:1px solid rgba(255,255,255,.06);
+}
+.footer-inner{max-width:1200px;margin:0 auto}
+.footer-top{
+  display:flex;justify-content:space-between;
+  gap:60px;margin-bottom:56px;flex-wrap:wrap;
+}
+.footer-brand .logo{
+  font-family:'Playfair Display',serif;
+  font-size:13px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:16px;display:block;
+}
+.footer-brand p{font-size:13px;color:var(--muted);line-height:1.7;max-width:260px}
+.footer-col h5{
+  font-size:11px;font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--muted);
+  margin-bottom:18px;
+}
+.footer-col a{
+  display:block;font-size:13px;color:rgba(255,255,255,.55);
+  text-decoration:none;margin-bottom:10px;
+  transition:color .2s;
+}
+.footer-col a:hover{color:var(--gold)}
+.footer-bottom{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-top:28px;border-top:1px solid rgba(255,255,255,.06);
+  flex-wrap:wrap;gap:16px;
+}
+.footer-bottom p{font-size:12px;color:var(--muted)}
+.footer-domain{
+  font-size:12px;color:var(--muted);
+  letter-spacing:.08em;
+}
+
+/* ─── ANIMATIONS ─────────────────────────────────── */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(24px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:translateY(0)}
+.reveal-d1{transition-delay:.1s}
+.reveal-d2{transition-delay:.2s}
+.reveal-d3{transition-delay:.3s}
+
+/* ─── ONBOARDING OVERLAY ─────────────────────────── */
+#ob-overlay{
+  position:fixed;inset:0;z-index:800;
+  background:var(--ink);
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+#ob-overlay.active{display:flex}
+#ob-overlay::before{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+  pointer-events:none;opacity:.5;
+}
+.ob-close{
+  position:absolute;top:28px;right:36px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);
+  border-radius:100px;padding:8px 18px;
+  font-size:12px;font-weight:600;color:var(--muted-l);
+  cursor:pointer;z-index:10;transition:all .2s;letter-spacing:.04em;
+}
+.ob-close:hover{background:rgba(255,255,255,.14);color:var(--cream)}
+.ob-step{
+  position:absolute;inset:0;
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  padding:60px 32px 60px;
+  animation:obIn .42s cubic-bezier(.22,1,.36,1) both;
+}
+.ob-step.active{display:flex}
+@keyframes obIn{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes obOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-20px)}}
+.ob-glow{
+  position:absolute;top:-200px;left:50%;transform:translateX(-50%);
+  width:700px;height:700px;
+  background:radial-gradient(ellipse,rgba(201,168,76,.09) 0%,transparent 65%);
+  pointer-events:none;
+}
+.ob-logo{
+  font-family:'Playfair Display',serif;
+  font-size:11px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:52px;position:relative;
+}
+.ob-progress{
+  display:flex;gap:6px;margin-bottom:44px;position:relative;
+}
+.ob-prog-dot{
+  width:28px;height:3px;border-radius:100px;
+  background:rgba(255,255,255,.12);transition:background .3s;
+}
+.ob-prog-dot.done{background:var(--gold)}
+.ob-eyebrow{
+  font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:18px;position:relative;
+}
+.ob-title{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(32px,4.5vw,54px);
+  font-weight:900;line-height:1.06;
+  text-align:center;max-width:680px;
+  margin-bottom:14px;position:relative;
+}
+.ob-title em{font-style:italic;color:var(--gold)}
+.ob-sub{
+  font-size:16px;color:var(--muted-l);line-height:1.7;
+  text-align:center;max-width:480px;
+  margin-bottom:48px;position:relative;
+}
+
+/* Role cards */
+.ob-role-cards{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;position:relative}
+.ob-role-card{
+  width:260px;background:rgba(255,255,255,.04);
+  border:1.5px solid rgba(255,255,255,.1);
+  border-radius:16px;padding:36px 28px;
+  cursor:pointer;transition:all .25s;text-align:center;
+}
+.ob-role-card:hover{border-color:rgba(201,168,76,.5);background:rgba(201,168,76,.06);transform:translateY(-3px)}
+.ob-role-card.selected{border-color:var(--gold);background:rgba(201,168,76,.1)}
+.ob-role-icon{font-size:48px;margin-bottom:18px}
+.ob-role-name{
+  font-family:'Playfair Display',serif;
+  font-size:22px;font-weight:700;color:var(--cream);margin-bottom:8px;
+}
+.ob-role-desc{font-size:13px;color:var(--muted-l);line-height:1.6}
+
+/* Question list */
+.ob-q-list{
+  width:100%;max-width:620px;position:relative;
+  display:flex;flex-direction:column;gap:10px;
+  max-height:52vh;overflow-y:auto;scrollbar-width:none;
+  margin-bottom:32px;
+}
+.ob-q-list::-webkit-scrollbar{display:none}
+.ob-q-item{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:15px 18px;background:rgba(255,255,255,.04);
+  border:1.5px solid rgba(255,255,255,.08);
+  border-radius:10px;cursor:pointer;transition:all .2s;
+}
+.ob-q-item:hover{border-color:rgba(201,168,76,.4)}
+.ob-q-item.on{border-color:var(--gold);background:rgba(201,168,76,.08)}
+.ob-q-dot{
+  width:18px;height:18px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.2);
+  flex-shrink:0;margin-top:2px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.ob-q-item.on .ob-q-dot{background:var(--gold);border-color:var(--gold)}
+.ob-q-dot-in{width:7px;height:7px;background:var(--ink);border-radius:50%;opacity:0;transition:opacity .15s}
+.ob-q-item.on .ob-q-dot-in{opacity:1}
+.ob-q-text{font-size:14px;line-height:1.5;color:var(--cream)}
+
+/* Checklist */
+.ob-cl-list{
+  width:100%;max-width:620px;position:relative;
+  display:flex;flex-direction:column;gap:0;
+  max-height:48vh;overflow-y:auto;scrollbar-width:none;
+  margin-bottom:32px;
+}
+.ob-cl-list::-webkit-scrollbar{display:none}
+.ob-cl-item{
+  display:flex;align-items:center;gap:16px;
+  padding:14px 4px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  cursor:pointer;transition:all .15s;
+}
+.ob-cl-item:last-child{border-bottom:none}
+.ob-cl-box{
+  width:20px;height:20px;border:2px solid rgba(255,255,255,.2);
+  border-radius:4px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.ob-cl-item.on .ob-cl-box{background:var(--gold);border-color:var(--gold)}
+.ob-cl-check{color:var(--ink);font-size:11px;font-weight:800}
+.ob-cl-lbl{font-size:14px;color:rgba(255,255,255,.8);line-height:1.4}
+
+/* Empathy / reveal screen */
+.ob-reveal-tags{
+  display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
+  max-width:580px;margin-bottom:40px;position:relative;
+}
+.ob-tag{
+  background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);
+  color:var(--gold-l);font-size:12px;padding:6px 16px;border-radius:100px;
+}
+
+/* Waitlist */
+.ob-waitlist-wrap{
+  display:flex;flex-direction:column;align-items:center;
+  gap:0;width:100%;max-width:480px;position:relative;
+}
+.ob-email-row{
+  display:flex;width:100%;gap:0;
+  background:rgba(255,255,255,.06);
+  border:1.5px solid rgba(255,255,255,.14);
+  border-radius:8px;overflow:hidden;
+  transition:border-color .2s;
+  margin-bottom:14px;
+}
+.ob-email-row:focus-within{border-color:var(--gold)}
+.ob-email-inp{
+  flex:1;background:transparent;border:none;
+  padding:17px 20px;font-family:'DM Sans',sans-serif;
+  font-size:15px;color:var(--cream);outline:none;
+}
+.ob-email-inp::placeholder{color:rgba(255,255,255,.25)}
+.ob-email-btn{
+  background:var(--gold);color:var(--ink);
+  border:none;padding:0 28px;
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;
+  letter-spacing:.04em;cursor:pointer;transition:background .2s;
+  white-space:nowrap;
+}
+.ob-email-btn:hover{background:var(--gold-l)}
+.ob-privacy{font-size:12px;color:var(--muted);line-height:1.6;text-align:center}
+
+/* Success state */
+.ob-success{
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;position:relative;
+}
+.ob-success-icon{font-size:64px;margin-bottom:24px}
+.ob-success h2{
+  font-family:'Playfair Display',serif;
+  font-size:40px;font-weight:900;color:var(--cream);
+  margin-bottom:14px;line-height:1.1;
+}
+.ob-success h2 em{font-style:italic;color:var(--gold)}
+.ob-success p{font-size:16px;color:var(--muted-l);line-height:1.7;max-width:400px;margin-bottom:36px}
+
+/* Nav buttons */
+.ob-nav{display:flex;align-items:center;gap:16px;position:relative}
+.ob-btn-next{
+  background:var(--gold);color:var(--ink);
+  border:none;border-radius:4px;
+  padding:16px 36px;font-family:'DM Sans',sans-serif;
+  font-size:14px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;
+}
+.ob-btn-next:hover{background:var(--gold-l);transform:translateY(-1px)}
+.ob-btn-next:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.ob-btn-back{
+  background:transparent;color:var(--muted-l);
+  border:1.5px solid rgba(255,255,255,.12);
+  border-radius:4px;padding:16px 24px;
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
+  cursor:pointer;transition:all .2s;
+}
+.ob-btn-back:hover{border-color:rgba(255,255,255,.3);color:var(--cream)}
+
+@media(max-width:700px){
+  .ob-role-cards{flex-direction:column;align-items:center}
+  .ob-role-card{width:100%;max-width:320px}
+  .ob-title{font-size:30px}
+  .ob-close{top:18px;right:20px}
+}
+
+@media(max-width:900px){
+  nav{padding:20px 28px}
+  nav.scrolled{padding:14px 28px}
+  .nav-links{display:none}
+  .hero{padding:100px 28px 64px}
+  .section{padding:80px 28px}
+  .steps-grid{grid-template-columns:1fr;gap:2px}
+  .step:first-child{border-radius:4px 4px 0 0}
+  .step:last-child{border-radius:0 0 4px 4px}
+  .tutors-section{padding:0 28px 80px}
+  .tutors-grid{grid-template-columns:1fr}
+  .tutors-header{flex-direction:column;align-items:flex-start}
+  .feature-split{padding:80px 28px 80px}
+  .feature-split::before{height:50px;border-radius:0 0 40px 40px}
+  .feature-split-inner{grid-template-columns:1fr;gap:48px}
+  .pricing-section{padding:80px 28px}
+  .pricing-grid{grid-template-columns:1fr;gap:16px}
+  .price-card.featured{transform:none}
+  .testimonials-section{padding:80px 28px}
+  .testimonials-grid{grid-template-columns:1fr}
+  .cta-band{padding:80px 28px}
+  .cta-band::before{height:50px;border-radius:0 0 40px 40px}
+  footer{padding:52px 28px 32px}
+  .footer-top{flex-direction:column;gap:36px}
+  .hero-stats{gap:28px;flex-wrap:wrap}
+}
+/* Invisible cap covering the rounded dark overhang at the top of light sections */
+.section-dark-cap{
+  position:absolute;top:0;left:0;right:0;height:90px;
+  z-index:2;pointer-events:auto;
+}
+
+/* ─── NAV APP BUTTON ────────────────────────────── */
+.nav-app-btn{
+  background:transparent;
+  border:1.5px solid rgba(255,255,255,.18);
+  border-radius:3px;padding:10px 20px;
+  font-family:'DM Sans',sans-serif;font-size:13px;
+  font-weight:600;letter-spacing:.04em;color:var(--muted-l);
+  cursor:pointer;transition:all .2s;
+}
+.nav-app-btn:hover{border-color:var(--gold);color:var(--gold);}
+nav.scrolled .nav-app-btn{border-color:rgba(255,255,255,.15);}
+
+/* ─── APP MODAL ─────────────────────────────────── */
+#app-modal{
+  position:fixed;inset:0;z-index:700;
+  background:rgba(0,0,0,.75);
+  backdrop-filter:blur(12px);
+  display:none;align-items:center;justify-content:center;
+  animation:fadeIn .3s ease;
+}
+#app-modal.active{display:flex;}
+.app-modal-inner{
+  position:relative;
+  width:min(1100px,96vw);
+  height:min(780px,92vh);
+  background:var(--ink);
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.1);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  box-shadow:0 40px 100px rgba(0,0,0,.6);
+  animation:slideUp .38s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
+.app-modal-topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;
+  background:rgba(255,255,255,.04);
+  border-bottom:1px solid rgba(255,255,255,.07);
+  flex-shrink:0;
+}
+.app-modal-dots{display:flex;gap:7px;}
+.app-dot{width:12px;height:12px;border-radius:50%;}
+.app-dot-r{background:#ff5f57;}
+.app-dot-y{background:#febc2e;}
+.app-dot-g{background:#28c840;}
+.app-modal-title{
+  font-family:'Playfair Display',serif;
+  font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--muted);
+}
+.app-modal-close{
+  background:none;border:none;color:var(--muted);
+  font-size:18px;cursor:pointer;padding:4px 8px;
+  transition:color .2s;line-height:1;
+}
+.app-modal-close:hover{color:var(--cream);}
+.app-modal-body{
+  flex:1;display:flex;overflow:hidden;
+}
+/* Sidebar */
+.app-sidebar{
+  width:220px;flex-shrink:0;
+  background:rgba(255,255,255,.03);
+  border-right:1px solid rgba(255,255,255,.07);
+  display:flex;flex-direction:column;
+  padding:24px 0;
+}
+.app-sidebar-logo{
+  font-family:'Playfair Display',serif;
+  font-size:11px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--gold);padding:0 22px 24px;
+  border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:16px;
+}
+.app-nav-item{
+  display:flex;align-items:center;gap:13px;
+  padding:12px 22px;font-size:14px;font-weight:500;
+  color:var(--muted-l);cursor:pointer;transition:all .2s;
+  border-left:2px solid transparent;
+}
+.app-nav-item:hover{color:var(--cream);background:rgba(255,255,255,.04);}
+.app-nav-item.active{color:var(--cream);border-left-color:var(--gold);background:rgba(201,168,76,.06);}
+.app-nav-icon{font-size:17px;width:22px;text-align:center;}
+.app-nav-badge{
+  margin-left:auto;background:var(--gold);color:var(--ink);
+  font-size:10px;font-weight:700;width:18px;height:18px;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+}
+/* Main content pane */
+.app-content{flex:1;overflow-y:auto;scrollbar-width:none;background:var(--ink);}
+.app-content::-webkit-scrollbar{display:none;}
+/* App panels */
+.app-panel{display:none;height:100%;}
+.app-panel.active{display:flex;flex-direction:column;}
+
+/* Explore panel */
+.app-explore-header{
+  padding:28px 28px 20px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.app-explore-header h2{
+  font-family:'Playfair Display',serif;
+  font-size:24px;font-weight:700;color:var(--cream);
+  margin-bottom:14px;
+}
+.app-explore-header h2 em{color:var(--gold);font-style:italic;}
+.app-search{
+  display:flex;gap:10px;align-items:center;
+}
+.app-search-inp{
+  flex:1;background:rgba(255,255,255,.07);
+  border:1.5px solid rgba(255,255,255,.1);
+  border-radius:8px;padding:10px 16px;
+  font-family:'DM Sans',sans-serif;font-size:14px;
+  color:var(--cream);outline:none;transition:border-color .2s;
+}
+.app-search-inp::placeholder{color:rgba(255,255,255,.25);}
+.app-search-inp:focus{border-color:var(--gold);}
+.app-filter-pill{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.07);
+  border:1.5px solid rgba(255,255,255,.12);
+  border-radius:100px;padding:8px 16px;
+  font-size:12px;font-weight:600;color:var(--muted-l);
+  cursor:pointer;transition:all .2s;white-space:nowrap;
+}
+.app-filter-pill:hover,.app-filter-pill.on{background:var(--gold);border-color:var(--gold);color:var(--ink);}
+.app-tutor-grid{
+  padding:24px 28px;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+  overflow-y:auto;
+}
+.app-tcard{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;overflow:hidden;cursor:pointer;
+  transition:all .25s;
+}
+.app-tcard:hover{border-color:rgba(201,168,76,.35);transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.3);}
+.app-tcard-media{
+  height:130px;position:relative;
+  display:flex;align-items:center;justify-content:center;
+  font-size:52px;overflow:hidden;
+}
+.app-tcard-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.7),transparent 55%);}
+.app-tcard-name{position:absolute;bottom:10px;left:12px;font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:white;}
+.app-tcard-rating{position:absolute;top:8px;right:8px;background:var(--gold);color:var(--ink);font-size:9px;font-weight:700;padding:3px 8px;border-radius:100px;}
+.app-tcard-body{padding:12px;}
+.app-tcard-subjects{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;}
+.app-tcard-subj{background:rgba(255,255,255,.07);color:var(--muted-l);font-size:9px;font-weight:700;padding:3px 7px;border-radius:3px;letter-spacing:.08em;text-transform:uppercase;}
+.app-tcard-rate{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--cream);}
+.app-tcard-rate span{font-family:'DM Sans',sans-serif;font-size:11px;color:var(--muted);font-weight:400;}
+
+/* Messages panel */
+.app-msg-header{padding:24px 28px 16px;border-bottom:1px solid rgba(255,255,255,.06);}
+.app-msg-header h2{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--cream);margin-bottom:12px;}
+.app-msg-search{
+  width:100%;background:rgba(255,255,255,.07);
+  border:1.5px solid rgba(255,255,255,.1);border-radius:100px;
+  padding:9px 16px;font-family:'DM Sans',sans-serif;
+  font-size:13px;color:var(--cream);outline:none;
+}
+.app-msg-search::placeholder{color:rgba(255,255,255,.25);}
+.app-msg-list{padding:12px 16px;display:flex;flex-direction:column;gap:4px;}
+.app-msg-row{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;border-radius:10px;cursor:pointer;
+  transition:background .2s;
+}
+.app-msg-row:hover{background:rgba(255,255,255,.05);}
+.app-msg-av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.app-msg-info{flex:1;min-width:0;}
+.app-msg-name{font-size:14px;font-weight:600;color:var(--cream);margin-bottom:3px;}
+.app-msg-preview{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.app-msg-preview.unread{color:var(--cream);font-weight:600;}
+.app-msg-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.app-msg-time{font-size:11px;color:var(--muted);}
+.app-msg-badge{background:var(--gold);color:var(--ink);font-size:10px;font-weight:700;width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+
+/* Sessions panel */
+.app-sess-header{padding:24px 28px 16px;border-bottom:1px solid rgba(255,255,255,.06);}
+.app-sess-header h2{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--cream);}
+.app-sess-list{padding:20px 28px;display:flex;flex-direction:column;gap:12px;}
+.app-sess-card{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;padding:18px 20px;
+  display:flex;align-items:center;gap:16px;
+  transition:border-color .2s;
+}
+.app-sess-card:hover{border-color:rgba(201,168,76,.25);}
+.app-sess-av{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.app-sess-info{flex:1;}
+.app-sess-name{font-size:15px;font-weight:700;color:var(--cream);margin-bottom:4px;}
+.app-sess-detail{font-size:12px;color:var(--muted);display:flex;gap:14px;}
+.app-sess-status{
+  padding:5px 12px;border-radius:100px;font-size:10px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;
+  background:rgba(201,168,76,.12);color:var(--gold);
+}
+.app-sess-book{
+  background:var(--gold);color:var(--ink);border:none;border-radius:6px;
+  padding:10px 18px;font-family:'DM Sans',sans-serif;font-size:12px;
+  font-weight:700;cursor:pointer;transition:background .2s;
+}
+.app-sess-book:hover{background:var(--gold-l);}
+
+/* Account panel */
+.app-acct-header{
+  background:var(--ink);padding:28px 28px 24px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex;align-items:center;gap:18px;
+}
+.app-acct-av{
+  width:60px;height:60px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),#a07820);
+  display:flex;align-items:center;justify-content:center;font-size:24px;
+  border:2px solid rgba(201,168,76,.3);flex-shrink:0;
+}
+.app-acct-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--cream);margin-bottom:4px;}
+.app-acct-email{font-size:13px;color:var(--muted);}
+.app-acct-role{display:inline-flex;align-items:center;gap:5px;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);color:var(--gold-l);font-size:10px;font-weight:700;padding:4px 12px;border-radius:100px;letter-spacing:.08em;text-transform:uppercase;margin-top:8px;}
+.app-acct-rows{padding:16px 28px;display:flex;flex-direction:column;gap:8px;}
+.app-acct-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;background:rgba(255,255,255,.04);
+  border-radius:10px;cursor:pointer;transition:background .2s;
+}
+.app-acct-row:hover{background:rgba(255,255,255,.07);}
+.app-acct-row-l{display:flex;align-items:center;gap:12px;}
+.app-acct-row-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.app-acct-row-title{font-size:14px;font-weight:600;color:var(--cream);}
+.app-acct-row-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* ─── AUTH GATE ─────────────────────────────────── */
+#auth-gate{position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.8);backdrop-filter:blur(14px);display:none;align-items:center;justify-content:center;}
+#auth-gate.active{display:flex;}
+.auth-gate-inner{background:#1a1814;border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:40px;width:min(440px,94vw);position:relative;animation:slideUp .35s cubic-bezier(.22,1,.36,1) both;}
+.auth-gate-logo{font-family:'Playfair Display',serif;font-size:13px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);text-align:center;margin-bottom:28px;}
+#auth-tabs{display:flex;gap:0;margin-bottom:28px;background:rgba(255,255,255,.06);border-radius:8px;padding:4px;}
+.auth-tab{flex:1;background:transparent;border:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--muted-l);padding:10px;border-radius:6px;cursor:pointer;transition:all .2s;}
+.auth-tab.active{background:var(--gold);color:var(--ink);}
+.auth-field-group{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+.auth-inp{width:100%;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);border-radius:8px;padding:12px 16px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--cream);outline:none;transition:border-color .2s;}
+.auth-inp::placeholder{color:rgba(255,255,255,.3);}
+.auth-inp:focus{border-color:var(--gold);}
+.auth-role-row{display:flex;gap:10px;margin-bottom:14px;}
+.auth-role-pill{flex:1;text-align:center;padding:10px;border-radius:8px;border:1.5px solid rgba(255,255,255,.12);font-size:13px;font-weight:600;color:var(--muted-l);cursor:pointer;transition:all .2s;}
+.auth-role-pill.active{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.08);}
+.auth-err{color:#e05050;font-size:12px;min-height:18px;margin-bottom:8px;}
+.auth-submit{width:100%;background:var(--gold);color:var(--ink);border:none;border-radius:8px;padding:14px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s;}
+.auth-submit:hover{background:var(--gold-l);}
+.auth-submit:disabled{opacity:.5;cursor:not-allowed;}
+.auth-foot{font-size:12px;color:var(--muted);text-align:center;margin-top:16px;}
+.auth-foot span{color:var(--gold);cursor:pointer;}
+.auth-close{position:absolute;top:16px;right:20px;background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;transition:color .2s;}
+.auth-close:hover{color:var(--cream);}
+.app-loading{padding:40px;text-align:center;color:var(--muted);font-size:14px;}
+.app-empty{padding:40px;text-align:center;color:var(--muted);font-size:14px;}
+.app-filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.sess-tabs{display:flex;gap:8px;margin-top:12px;}
+.sess-tab{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);border-radius:100px;padding:6px 18px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--muted-l);cursor:pointer;transition:all .2s;}
+.sess-tab.active{background:var(--gold);border-color:var(--gold);color:var(--ink);}
+.td-hero{height:180px;position:relative;display:flex;align-items:flex-end;padding:20px;}
+.td-hero-emoji{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:70px;}
+.td-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.85),transparent 55%);}
+.td-hero-name{position:relative;z-index:1;font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#fff;}
+.td-hero-rating{position:absolute;top:14px;right:14px;background:var(--gold);color:var(--ink);font-size:11px;font-weight:700;padding:5px 12px;border-radius:100px;z-index:1;}
+.td-body{padding:24px;}
+.td-subjects{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.td-subj{background:rgba(255,255,255,.08);color:var(--muted-l);font-size:10px;font-weight:700;padding:4px 10px;border-radius:3px;letter-spacing:.08em;text-transform:uppercase;}
+.td-bio{font-size:14px;color:var(--muted-l);line-height:1.6;margin-bottom:20px;}
+.td-rate-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.td-rate{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--cream);}
+.td-rate span{font-family:'DM Sans',sans-serif;font-size:13px;color:var(--muted);font-weight:400;}
+.td-actions{display:flex;gap:10px;}
+.td-btn-book{flex:1;background:var(--gold);color:var(--ink);border:none;border-radius:8px;padding:14px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s;}
+.td-btn-book:hover{background:var(--gold-l);}
+.td-btn-msg{background:rgba(255,255,255,.08);color:var(--cream);border:1.5px solid rgba(255,255,255,.15);border-radius:8px;padding:14px 20px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;}
+.td-btn-msg:hover{border-color:var(--gold);color:var(--gold);}
+.td-back{display:inline-flex;align-items:center;gap:6px;background:none;border:none;color:var(--muted-l);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;padding:16px 20px;transition:color .2s;}
+.td-back:hover{color:var(--cream);}
+.booking-wrap{padding:24px 28px;}
+.booking-wrap h3{font-family:'Playfair Display',serif;font-size:22px;color:var(--cream);margin-bottom:6px;}
+.booking-sub{font-size:13px;color:var(--muted);margin-bottom:24px;}
+.booking-field{margin-bottom:16px;}
+.booking-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.booking-inp{width:100%;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);border-radius:8px;padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--cream);outline:none;transition:border-color .2s;}
+.booking-inp:focus{border-color:var(--gold);}
+.booking-inp option{background:#1a1814;}
+.booking-confirm{width:100%;background:var(--gold);color:var(--ink);border:none;border-radius:8px;padding:14px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s;margin-top:8px;}
+.booking-confirm:hover{background:var(--gold-l);}
+.booking-success{text-align:center;padding:40px 24px;}
+.booking-success-icon{font-size:48px;margin-bottom:16px;}
+.booking-success h3{font-family:'Playfair Display',serif;font-size:22px;color:var(--cream);margin-bottom:8px;}
+.booking-success p{font-size:14px;color:var(--muted-l);}
+#convo-view{display:flex;flex-direction:column;}
+.convo-header{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;}
+.convo-back{background:none;border:none;color:var(--muted-l);font-size:13px;cursor:pointer;padding:4px 8px;transition:color .2s;}
+.convo-back:hover{color:var(--cream);}
+.convo-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:var(--cream);}
+.convo-messages{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:10px;scrollbar-width:none;min-height:200px;max-height:340px;}
+.convo-messages::-webkit-scrollbar{display:none;}
+.convo-bubble{max-width:70%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.5;}
+.convo-bubble.mine{background:var(--gold);color:var(--ink);border-radius:14px 14px 4px 14px;align-self:flex-end;}
+.convo-bubble.theirs{background:rgba(255,255,255,.08);color:var(--cream);border-radius:14px 14px 14px 4px;align-self:flex-start;}
+.convo-bubble-time{font-size:10px;opacity:.6;margin-top:3px;text-align:right;}
+.convo-input-row{display:flex;gap:10px;padding:14px 20px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0;}
+.convo-inp{flex:1;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:100px;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--cream);outline:none;transition:border-color .2s;}
+.convo-inp:focus{border-color:var(--gold);}
+.convo-inp::placeholder{color:rgba(255,255,255,.25);}
+.convo-send{background:var(--gold);color:var(--ink);border:none;border-radius:100px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:background .2s;}
+.convo-send:hover{background:var(--gold-l);}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">Luminary</a>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#tutors">Tutors</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#about">About</a>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center;">
+    <button class="nav-app-btn" onclick="openApp()">Launch App ↗</button>
+    <a href="#" class="nav-cta">Get Started</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="hero-eyebrow">Now live — luminaryprep.co</div>
+  <h1>Learning that <em>actually</em> works.</h1>
+  <p>Expert tutors. Real results. A platform built for students ready to change their story — and for tutors ready to build theirs.</p>
+  <div class="hero-actions">
+    <a href="#" class="btn-primary">Find a Tutor →</a>
+    <a href="#" class="btn-ghost-hero">Become a Tutor</a>
+  </div>
+  <div class="hero-stats">
+    <div>
+      <div class="hero-stat-num">4.9<span>★</span></div>
+      <div class="hero-stat-lbl">Average Rating</div>
+    </div>
+    <div class="hero-divider"></div>
+    <div>
+      <div class="hero-stat-num">920<span>+</span></div>
+      <div class="hero-stat-lbl">Sessions Booked</div>
+    </div>
+    <div class="hero-divider"></div>
+    <div>
+      <div class="hero-stat-num">136<span>+</span></div>
+      <div class="hero-stat-lbl">Expert Tutors</div>
+    </div>
+    <div class="hero-divider"></div>
+    <div>
+      <div class="hero-stat-num">98<span>%</span></div>
+      <div class="hero-stat-lbl">Would Recommend</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track" id="marquee">
+    <span class="marquee-item">AP Calculus BC</span>
+    <span class="marquee-item">College Essay Writing</span>
+    <span class="marquee-item">SAT / ACT Prep</span>
+    <span class="marquee-item">AP Biology</span>
+    <span class="marquee-item">Literary Analysis</span>
+    <span class="marquee-item">AP Physics</span>
+    <span class="marquee-item">Chemistry</span>
+    <span class="marquee-item">US History</span>
+    <span class="marquee-item">Algebra &amp; Pre-Calc</span>
+    <span class="marquee-item">Statistics</span>
+    <span class="marquee-item">World Literature</span>
+    <span class="marquee-item">AP Calculus BC</span>
+    <span class="marquee-item">College Essay Writing</span>
+    <span class="marquee-item">SAT / ACT Prep</span>
+    <span class="marquee-item">AP Biology</span>
+    <span class="marquee-item">Literary Analysis</span>
+    <span class="marquee-item">AP Physics</span>
+    <span class="marquee-item">Chemistry</span>
+    <span class="marquee-item">US History</span>
+    <span class="marquee-item">Algebra &amp; Pre-Calc</span>
+    <span class="marquee-item">Statistics</span>
+    <span class="marquee-item">World Literature</span>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how">
+  <div class="section-inner">
+    <div class="section-label reveal">How it works</div>
+    <h2 class="section-title reveal reveal-d1">A smarter path to <em>better grades.</em></h2>
+    <p class="section-sub reveal reveal-d2">We connect students with expert tutors, handle all the friction, and get out of the way.</p>
+    <div class="steps-grid">
+      <div class="step reveal">
+        <div class="step-num">01</div>
+        <h3>Tell us where you are</h3>
+        <p>Answer a few honest questions about your struggles. We use your answers to understand what kind of support you actually need — not what a generic algorithm thinks you need.</p>
+      </div>
+      <div class="step reveal reveal-d1">
+        <div class="step-num">02</div>
+        <h3>Browse expert tutors</h3>
+        <p>Explore verified tutors with real ratings, honest bios, and profile videos. Every tutor on Luminary has been vetted — no anonymous faces, no ambiguity.</p>
+      </div>
+      <div class="step reveal reveal-d2">
+        <div class="step-num">03</div>
+        <h3>Book and begin</h3>
+        <p>Choose a date, pick a time, pay securely. Then just show up. Your tutor handles the rest — with patience, expertise, and a genuine interest in your growth.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TUTORS -->
+<section class="tutors-section" id="tutors">
+  <div class="tutors-inner">
+    <div class="tutors-header reveal">
+      <div>
+        <div class="section-label">Our Tutors</div>
+        <h2 class="section-title">Meet a few of our <em>experts.</em></h2>
+      </div>
+      <a href="#" class="btn-ghost-hero" style="font-size:13px;padding:14px 28px">Browse all tutors →</a>
+    </div>
+    <div class="tutors-grid">
+      <div class="tutor-card reveal">
+        <div class="tutor-card-media" style="background:linear-gradient(135deg,#1a3a5c,#0e2238)">
+          <div class="tutor-emoji-bg">🌟</div>
+          <div class="tutor-card-overlay"></div>
+          <div class="tutor-card-name">Amara Osei</div>
+          <div class="tutor-card-rating">⭐ 4.9</div>
+        </div>
+        <div class="tutor-card-body">
+          <div class="tutor-subjects">
+            <span class="tutor-subject">Math</span>
+            <span class="tutor-subject">Science</span>
+          </div>
+          <div class="tutor-meta">
+            <div class="tutor-rate">$85<span>/hr</span></div>
+            <div class="tutor-stars">★★★★★</div>
+          </div>
+          <div class="tutor-bio">MIT grad. AP Calculus &amp; Physics specialist. Former high school teacher — I make calculus click.</div>
+        </div>
+      </div>
+      <div class="tutor-card reveal reveal-d1">
+        <div class="tutor-card-media" style="background:linear-gradient(135deg,#3d1f0a,#1a0e05)">
+          <div class="tutor-emoji-bg">📚</div>
+          <div class="tutor-card-overlay"></div>
+          <div class="tutor-card-name">Leo Marchetti</div>
+          <div class="tutor-card-rating">⭐ 4.7</div>
+        </div>
+        <div class="tutor-card-body">
+          <div class="tutor-subjects">
+            <span class="tutor-subject">English</span>
+            <span class="tutor-subject">History</span>
+          </div>
+          <div class="tutor-meta">
+            <div class="tutor-rate">$70<span>/hr</span></div>
+            <div class="tutor-stars">★★★★★</div>
+          </div>
+          <div class="tutor-bio">Published author &amp; English Lit PhD candidate. I help students find their voice in any kind of writing.</div>
+        </div>
+      </div>
+      <div class="tutor-card reveal reveal-d2">
+        <div class="tutor-card-media" style="background:linear-gradient(135deg,#1a3322,#0a1f14)">
+          <div class="tutor-emoji-bg">🔬</div>
+          <div class="tutor-card-overlay"></div>
+          <div class="tutor-card-name">Yuki Tanaka</div>
+          <div class="tutor-card-rating">⭐ 5.0</div>
+        </div>
+        <div class="tutor-card-body">
+          <div class="tutor-subjects">
+            <span class="tutor-subject">Science</span>
+            <span class="tutor-subject">Math</span>
+          </div>
+          <div class="tutor-meta">
+            <div class="tutor-rate">$95<span>/hr</span></div>
+            <div class="tutor-stars">★★★★★</div>
+          </div>
+          <div class="tutor-bio">Biochem researcher by day. I break complex science into simple, memorable frameworks that stick.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE SPLIT -->
+<section class="feature-split" id="about">
+  <div class="section-dark-cap"></div>
+  <div class="feature-split-inner">
+    <div>
+      <div class="section-label reveal">Built different</div>
+      <h2 class="section-title reveal reveal-d1">Everything in one <em>elegant</em> place.</h2>
+      <p class="section-sub reveal reveal-d2">No more scattered emails, confusing scheduling apps, or Venmo receipts. Luminary handles it all so you can focus on what matters.</p>
+      <div class="feature-list">
+        <div class="feature-item reveal reveal-d1">
+          <div class="feature-icon">📅</div>
+          <div class="feature-text">
+            <h4>Seamless Scheduling</h4>
+            <p>Browse real-time availability, pick your time, confirm — done. No back-and-forth.</p>
+          </div>
+        </div>
+        <div class="feature-item reveal reveal-d2">
+          <div class="feature-icon">💬</div>
+          <div class="feature-text">
+            <h4>Built-in Messaging</h4>
+            <p>Talk to your tutor before, during, and after. Everything stays in one place.</p>
+          </div>
+        </div>
+        <div class="feature-item reveal reveal-d3">
+          <div class="feature-icon">🔒</div>
+          <div class="feature-text">
+            <h4>Secure Payments</h4>
+            <p>Stripe-powered checkout. Transparent pricing. No hidden fees on our end.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="feature-visual reveal reveal-d2">
+      <div class="fv-header">
+        <div class="fv-avatar">🔬</div>
+        <div>
+          <div class="fv-name">Yuki Tanaka</div>
+          <div class="fv-sub">Biochem · Science · Math</div>
+        </div>
+      </div>
+      <div class="fv-body">
+        <div class="fv-bubble them">Hey! I saw your profile — love your approach to AP Bio. When are you free?</div>
+        <div class="fv-bubble me">I have Thursday afternoons open. Does 3 PM work?</div>
+        <div class="fv-bubble them">Perfect. I'll block that in. Looking forward to it 🎉</div>
+        <div class="fv-cal">
+          <div class="fv-cal-title">Select a date</div>
+          <div class="fv-dates">
+            <div class="fv-date"><div class="fd">Mon</div><div class="fn" style="color:var(--muted)">10</div></div>
+            <div class="fv-date"><div class="fd">Tue</div><div class="fn" style="color:var(--muted)">11</div></div>
+            <div class="fv-date active"><div class="fd">Thu</div><div class="fn">13</div></div>
+            <div class="fv-date"><div class="fd">Fri</div><div class="fn" style="color:var(--muted)">14</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing-section" id="pricing">
+  <div class="pricing-inner">
+    <div class="pricing-header">
+      <div class="section-label reveal">Pricing</div>
+      <h2 class="section-title reveal reveal-d1">Simple, transparent <em>pricing.</em></h2>
+      <p class="section-sub reveal reveal-d2" style="margin:0 auto;text-align:center">For tutors. Students only pay session rates — nothing else.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card reveal">
+        <div class="price-tier">Pay-per-Session</div>
+        <div class="price-amount">$0</div>
+        <div class="price-period">per month</div>
+        <div class="price-desc">Free to list. We take a small 15% fee per session — no monthly cost.</div>
+        <div class="price-divider"></div>
+        <div class="price-perks">
+          <div class="price-perk"><span class="perk-check">✓</span>No upfront cost</div>
+          <div class="price-perk"><span class="perk-check">✓</span>Get started immediately</div>
+          <div class="price-perk"><span class="perk-check">✓</span>15% fee per session only</div>
+          <div class="price-perk" style="opacity:.35"><span class="perk-check">—</span>Priority placement</div>
+          <div class="price-perk" style="opacity:.35"><span class="perk-check">—</span>Zero transaction fees</div>
+        </div>
+        <button class="btn-price btn-price-outline">Get started free</button>
+      </div>
+      <div class="price-card featured reveal reveal-d1">
+        <div class="price-badge">Most Popular</div>
+        <div class="price-tier">Annual</div>
+        <div class="price-amount">$408</div>
+        <div class="price-period">per year — just $34/mo</div>
+        <div class="price-desc">First month free. No transaction fees — ever. Best value for active tutors.</div>
+        <div class="price-divider"></div>
+        <div class="price-perks">
+          <div class="price-perk"><span class="perk-check">✓</span>Zero transaction fees</div>
+          <div class="price-perk"><span class="perk-check">✓</span>Keep 100% of sessions</div>
+          <div class="price-perk"><span class="perk-check">✓</span>Priority search placement</div>
+          <div class="price-perk"><span class="perk-check">✓</span>First month completely free</div>
+          <div class="price-perk"><span class="perk-check">✓</span>Full analytics dashboard</div>
+        </div>
+        <button class="btn-price btn-price-gold">Start free for 1 month →</button>
+      </div>
+      <div class="price-card reveal reveal-d2">
+        <div class="price-tier">Monthly</div>
+        <div class="price-amount">$40</div>
+        <div class="price-period">per month</div>
+        <div class="price-desc">First month free. Zero fees, full features. Cancel any time you like.</div>
+        <div class="price-divider"></div>
+        <div class="price-perks">
+          <div class="price-perk"><span class="perk-check">✓</span>Zero transaction fees</div>
+          <div class="price-perk"><span class="perk-check">✓</span>Keep 100% of what you earn</div>
+          <div class="price-perk"><span class="perk-check">✓</span>Cancel anytime</div>
+          <div class="price-perk"><span class="perk-check">✓</span>Full profile &amp; discovery</div>
+          <div class="price-perk" style="opacity:.35"><span class="perk-check">—</span>Priority placement</div>
+        </div>
+        <button class="btn-price btn-price-light">Get started</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials-section">
+  <div class="testimonials-inner">
+    <div class="section-label reveal">Real results</div>
+    <h2 class="section-title reveal reveal-d1">Students and tutors <em>love</em> Luminary.</h2>
+    <div class="testimonials-grid">
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">Amara transformed my daughter's relationship with math. She went from failing to a B+ in just six weeks.</div>
+        <div class="testi-author">
+          <div class="testi-avatar">👩</div>
+          <div>
+            <div class="testi-name">Sarah K.</div>
+            <div class="testi-detail">Parent · February 2026</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal reveal-d1">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">Leo helped me write a college essay that got me into my dream school. I still can't believe it.</div>
+        <div class="testi-author">
+          <div class="testi-avatar">🎓</div>
+          <div>
+            <div class="testi-name">Priya M.</div>
+            <div class="testi-detail">Student · January 2026</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal reveal-d2">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">Perfect 5s on both my AP exams. Yuki's frameworks are genuinely genius — I use them to this day.</div>
+        <div class="testi-author">
+          <div class="testi-avatar">🔬</div>
+          <div>
+            <div class="testi-name">Aiden L.</div>
+            <div class="testi-detail">Student · February 2026</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">As a tutor, Luminary handled all the admin I used to dread. Now I just teach — and I love it.</div>
+        <div class="testi-author">
+          <div class="testi-avatar">🧑‍🏫</div>
+          <div>
+            <div class="testi-name">Marcus T.</div>
+            <div class="testi-detail">Tutor · January 2026</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal reveal-d1">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">Went from a C to an A in AP Chemistry in a single semester. I was skeptical — I am no longer skeptical.</div>
+        <div class="testi-author">
+          <div class="testi-avatar">⚗️</div>
+          <div>
+            <div class="testi-name">Omar S.</div>
+            <div class="testi-detail">Student · January 2026</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal reveal-d2">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">The booking system is frictionless. My clients love it and I've stopped losing students to scheduling confusion.</div>
+        <div class="testi-author">
+          <div class="testi-avatar">✏️</div>
+          <div>
+            <div class="testi-name">Fiona C.</div>
+            <div class="testi-detail">Tutor · February 2026</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section class="cta-band">
+  <div class="section-dark-cap"></div>
+  <div class="cta-inner">
+    <h2>Your story isn't <em>written yet.</em></h2>
+    <p>Whether you're a student looking for your breakthrough or a tutor ready to build a real practice — Luminary is where it starts.</p>
+    <div class="cta-buttons">
+      <a href="#" class="btn-ink">I'm a Student →</a>
+      <a href="#" class="btn-outline-ink">I'm a Tutor →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <span class="logo">Luminary</span>
+        <p>Expert tutors. Real results. A platform built for students ready to change their story.</p>
+      </div>
+      <div class="footer-col">
+        <h5>For Students</h5>
+        <a href="#">Browse Tutors</a>
+        <a href="#">How it Works</a>
+        <a href="#">Subjects</a>
+        <a href="#">Pricing</a>
+      </div>
+      <div class="footer-col">
+        <h5>For Tutors</h5>
+        <a href="#">Become a Tutor</a>
+        <a href="#">Plans &amp; Pricing</a>
+        <a href="#">Upload Profile</a>
+        <a href="#">Tutor FAQ</a>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <a href="#">About</a>
+        <a href="#">Blog</a>
+        <a href="#">Support</a>
+        <a href="#">Privacy Policy</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Luminary. All rights reserved.</p>
+      <span class="footer-domain">luminaryprep.co</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ONBOARDING OVERLAY -->
+<div id="ob-overlay">
+  <div class="ob-glow"></div>
+  <button class="ob-close" onclick="closeOnboarding()">✕ Close</button>
+
+  <!-- STEP 0: Role -->
+  <div class="ob-step active" id="ob-s0">
+    <div class="ob-logo">Luminary</div>
+    <div class="ob-progress">
+      <div class="ob-prog-dot done" id="pd0"></div>
+      <div class="ob-prog-dot" id="pd1"></div>
+      <div class="ob-prog-dot" id="pd2"></div>
+      <div class="ob-prog-dot" id="pd3"></div>
+      <div class="ob-prog-dot" id="pd4"></div>
+    </div>
+    <div class="ob-eyebrow">Welcome</div>
+    <h2 class="ob-title">Who are you joining as?</h2>
+    <p class="ob-sub">Tell us your role so we can personalise your experience.</p>
+    <div class="ob-role-cards">
+      <div class="ob-role-card" id="rc-student" onclick="selectRole('student')">
+        <div class="ob-role-icon">🎓</div>
+        <div class="ob-role-name">Student</div>
+        <div class="ob-role-desc">Browse expert tutors, book sessions, and finally get the support you deserve.</div>
+      </div>
+      <div class="ob-role-card" id="rc-tutor" onclick="selectRole('tutor')">
+        <div class="ob-role-icon">🧑‍🏫</div>
+        <div class="ob-role-name">Tutor</div>
+        <div class="ob-role-desc">Build your practice, reach more students, and focus on what you love: teaching.</div>
+      </div>
+    </div>
+    <div class="ob-nav" style="margin-top:36px">
+      <button class="ob-btn-next" id="ob-next0" onclick="goStep(1)" disabled>Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 1: Questions -->
+  <div class="ob-step" id="ob-s1">
+    <div class="ob-logo">Luminary</div>
+    <div class="ob-progress">
+      <div class="ob-prog-dot done"></div>
+      <div class="ob-prog-dot done"></div>
+      <div class="ob-prog-dot" id="pd1b"></div>
+      <div class="ob-prog-dot"></div>
+      <div class="ob-prog-dot"></div>
+    </div>
+    <div class="ob-eyebrow" id="ob-q-eyebrow">Step 1 of 3</div>
+    <h2 class="ob-title" id="ob-q-title">Let's understand <em>where you are.</em></h2>
+    <div class="ob-q-list" id="ob-q-list"></div>
+    <div class="ob-nav">
+      <button class="ob-btn-back" onclick="goStep(0)">← Back</button>
+      <button class="ob-btn-next" onclick="goStep(2)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Checklist -->
+  <div class="ob-step" id="ob-s2">
+    <div class="ob-logo">Luminary</div>
+    <div class="ob-progress">
+      <div class="ob-prog-dot done"></div>
+      <div class="ob-prog-dot done"></div>
+      <div class="ob-prog-dot done"></div>
+      <div class="ob-prog-dot"></div>
+      <div class="ob-prog-dot"></div>
+    </div>
+    <div class="ob-eyebrow">Step 2 of 3</div>
+    <h2 class="ob-title">To best support you, we need to <em>know you.</em></h2>
+    <p class="ob-sub" style="margin-bottom:28px">Select everything that applies to your situation.</p>
+    <div class="ob-cl-list" id="ob-cl-list"></div>
+    <div class="ob-nav">
+      <button class="ob-btn-back" onclick="goStep(1)">← Back</button>
+      <button class="ob-btn-next" onclick="goStep(3)">Find out how →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Reveal / Empathy -->
+  <div class="ob-step" id="ob-s3">
+    <div class="ob-logo">Luminary</div>
+    <div class="ob-progress">
+      <div class="ob-prog-dot done"></div>
+      <div class="ob-prog-dot done"></div>
+      <div class="ob-prog-dot done"></div>
+      <div class="ob-prog-dot done"></div>
+      <div class="ob-prog-dot"></div>
+    </div>
+    <div class="ob-eyebrow">You are not alone</div>
+    <h2 class="ob-title" id="ob-reveal-title">Our tutors help you perform — and feel <em>confident</em> you can succeed.</h2>
+    <div class="ob-reveal-tags" id="ob-tags"></div>
+    <p class="ob-sub" id="ob-reveal-sub">In school and in life — that confidence is everything. Luminary connects you with the right person.</p>
+    <div class="ob-nav">
+      <button class="ob-btn-back" onclick="goStep(2)">← Back</button>
+      <button class="ob-btn-next" onclick="goStep(4)">Join the waitlist →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: Waitlist -->
+  <div class="ob-step" id="ob-s4" style="text-align:center;align-items:center;">
+    <div class="ob-logo">Luminary</div>
+    <div class="ob-progress">
+      <div class="ob-prog-dot done"></div>
+      <div class="ob-prog-dot done"></div>
+      <div class="ob-prog-dot done"></div>
+      <div class="ob-prog-dot done"></div>
+      <div class="ob-prog-dot done"></div>
+    </div>
+    <div id="ob-waitlist-form" style="display:flex;flex-direction:column;align-items:center;width:100%">
+      <div class="ob-eyebrow">Almost there</div>
+      <h2 class="ob-title">Secure your spot on <em>Luminary.</em></h2>
+      <p class="ob-sub">We're launching soon. Drop your email and we'll let you in first — no spam, ever.</p>
+      <div class="ob-waitlist-wrap">
+        <div class="ob-email-row">
+          <input class="ob-email-inp" id="ob-email" type="email" placeholder="your@email.com" onkeydown="if(event.key==='Enter')submitWaitlist()"/>
+          <button class="ob-email-btn" onclick="submitWaitlist()">Get Early Access →</button>
+        </div>
+        <p class="ob-privacy">🔒 No spam. Unsubscribe anytime. We respect your privacy.</p>
+      </div>
+    </div>
+    <div id="ob-success" class="ob-success" style="display:none">
+      <div class="ob-success-icon">🎉</div>
+      <h2>You're on the <em>list.</em></h2>
+      <p>We'll reach out as soon as Luminary launches. Get ready for something <strong style="color:var(--gold)">different</strong>.</p>
+      <button class="ob-btn-next" onclick="closeOnboarding()">Back to site →</button>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH GATE (shown when user tries to open app and is not logged in) -->
+<div id="auth-gate">
+  <div class="auth-gate-inner">
+    <div class="auth-gate-logo">Luminary</div>
+    <div id="auth-tabs">
+      <button class="auth-tab active" onclick="authTab('login')">Sign In</button>
+      <button class="auth-tab" onclick="authTab('signup')">Create Account</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="auth-login">
+      <div class="auth-field-group">
+        <input class="auth-inp" id="login-email" type="email" placeholder="Email address"/>
+        <input class="auth-inp" id="login-pass"  type="password" placeholder="Password"/>
+      </div>
+      <div id="auth-err-login" class="auth-err"></div>
+      <button class="auth-submit" id="login-btn" onclick="doLogin()">Sign In →</button>
+      <p class="auth-foot">Don't have an account? <span onclick="authTab('signup')">Create one free</span></p>
+    </div>
+
+    <!-- SIGNUP -->
+    <div id="auth-signup" style="display:none">
+      <div class="auth-field-group">
+        <input class="auth-inp" id="signup-name"  type="text"     placeholder="Full name"/>
+        <input class="auth-inp" id="signup-email" type="email"    placeholder="Email address"/>
+        <input class="auth-inp" id="signup-pass"  type="password" placeholder="Password (min 6 chars)"/>
+      </div>
+      <div class="auth-role-row">
+        <div class="auth-role-pill active" id="arp-student" onclick="setAuthRole('student')">🎓 Student</div>
+        <div class="auth-role-pill" id="arp-tutor"   onclick="setAuthRole('tutor')">🧑‍🏫 Tutor</div>
+      </div>
+      <div id="auth-err-signup" class="auth-err"></div>
+      <button class="auth-submit" id="signup-btn" onclick="doSignup()">Create Account →</button>
+      <p class="auth-foot">Already have an account? <span onclick="authTab('login')">Sign in</span></p>
+    </div>
+
+    <button class="auth-close" onclick="closeAuthGate()">✕</button>
+  </div>
+</div>
+
+<!-- APP MODAL -->
+<div id="app-modal">
+  <div class="app-modal-inner">
+    <div class="app-modal-topbar">
+      <div class="app-modal-dots">
+        <div class="app-dot app-dot-r"></div>
+        <div class="app-dot app-dot-y"></div>
+        <div class="app-dot app-dot-g"></div>
+      </div>
+      <div class="app-modal-title">Luminary</div>
+      <button class="app-modal-close" onclick="closeApp()">✕</button>
+    </div>
+    <div class="app-modal-body">
+      <!-- Sidebar -->
+      <div class="app-sidebar">
+        <div class="app-sidebar-logo">Luminary</div>
+        <div class="app-nav-item active" onclick="switchPanel('explore',this)">
+          <span class="app-nav-icon">🔍</span>Explore
+        </div>
+        <div class="app-nav-item" onclick="switchPanel('messages',this)">
+          <span class="app-nav-icon">💬</span>Messages
+          <div class="app-nav-badge" id="msg-badge" style="display:none">0</div>
+        </div>
+        <div class="app-nav-item" onclick="switchPanel('sessions',this)">
+          <span class="app-nav-icon">📅</span>Sessions
+        </div>
+        <div class="app-nav-item" onclick="switchPanel('account',this)">
+          <span class="app-nav-icon">👤</span>Account
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="app-content">
+
+        <!-- EXPLORE -->
+        <div class="app-panel active" id="panel-explore">
+          <div class="app-explore-header">
+            <h2>Find your <em>perfect</em> tutor.</h2>
+            <div class="app-search">
+              <input class="app-search-inp" id="tutor-search" placeholder="Search by name or subject…" oninput="filterTutors()"/>
+            </div>
+            <div class="app-filter-row" id="subject-filters"></div>
+          </div>
+          <div class="app-tutor-grid" id="tutor-grid">
+            <div class="app-loading">Loading tutors…</div>
+          </div>
+        </div>
+
+        <!-- TUTOR DETAIL (sub-panel) -->
+        <div class="app-panel" id="panel-tutor-detail">
+          <div id="tutor-detail-content"></div>
+        </div>
+
+        <!-- MESSAGES -->
+        <div class="app-panel" id="panel-messages">
+          <div class="app-msg-header">
+            <h2>Messages</h2>
+            <input class="app-msg-search" id="msg-search-inp" placeholder="Search conversations…" oninput="filterMessages()"/>
+          </div>
+          <div id="msg-list-wrap">
+            <div class="app-loading">Loading messages…</div>
+          </div>
+          <!-- Open conversation view -->
+          <div id="convo-view" style="display:none;flex-direction:column;flex:1;height:100%;">
+            <div class="convo-header">
+              <button class="convo-back" onclick="closeConvo()">← Back</button>
+              <div class="convo-title" id="convo-title"></div>
+            </div>
+            <div class="convo-messages" id="convo-messages"></div>
+            <div class="convo-input-row">
+              <input class="convo-inp" id="convo-inp" placeholder="Type a message…" onkeydown="if(event.key==='Enter')sendMessage()"/>
+              <button class="convo-send" onclick="sendMessage()">Send</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SESSIONS -->
+        <div class="app-panel" id="panel-sessions">
+          <div class="app-sess-header">
+            <h2>My Sessions</h2>
+            <div class="sess-tabs">
+              <button class="sess-tab active" onclick="sesTab('upcoming',this)">Upcoming</button>
+              <button class="sess-tab" onclick="sesTab('completed',this)">Completed</button>
+            </div>
+          </div>
+          <div id="sessions-list">
+            <div class="app-loading">Loading sessions…</div>
+          </div>
+          <div style="text-align:center;padding:20px 28px;">
+            <button class="app-sess-book" onclick="switchPanel('explore',document.querySelector('.app-nav-item'))">+ Book a New Session</button>
+          </div>
+        </div>
+
+        <!-- BOOKING sub-panel -->
+        <div class="app-panel" id="panel-booking">
+          <div id="booking-content"></div>
+        </div>
+
+        <!-- ACCOUNT -->
+        <div class="app-panel" id="panel-account">
+          <div class="app-acct-header" id="acct-header">
+            <div class="app-acct-av" id="acct-av">👤</div>
+            <div>
+              <div class="app-acct-name" id="acct-name">—</div>
+              <div class="app-acct-email" id="acct-email">—</div>
+              <div class="app-acct-role" id="acct-role">🎓 Student</div>
+            </div>
+          </div>
+          <div class="app-acct-rows">
+            <div class="app-acct-row" onclick="openEditProfile()">
+              <div class="app-acct-row-l">
+                <div class="app-acct-row-icon" style="background:rgba(44,95,138,.1)">✏️</div>
+                <div><div class="app-acct-row-title">Edit Profile</div><div class="app-acct-row-sub" id="acct-edit-sub">Update your name</div></div>
+              </div><span style="color:var(--muted)">›</span>
+            </div>
+            <div class="app-acct-row" onclick="switchPanel('sessions',document.querySelectorAll('.app-nav-item')[2])">
+              <div class="app-acct-row-l">
+                <div class="app-acct-row-icon" style="background:rgba(201,168,76,.1)">📅</div>
+                <div><div class="app-acct-row-title">My Sessions</div><div class="app-acct-row-sub">View bookings</div></div>
+              </div><span style="color:var(--muted)">›</span>
+            </div>
+            <div class="app-acct-row" onclick="switchPanel('messages',document.querySelectorAll('.app-nav-item')[1])">
+              <div class="app-acct-row-l">
+                <div class="app-acct-row-icon" style="background:rgba(45,122,79,.1)">💬</div>
+                <div><div class="app-acct-row-title">Messages</div><div class="app-acct-row-sub">Conversations with tutors</div></div>
+              </div><span style="color:var(--muted)">›</span>
+            </div>
+            <div class="app-acct-row" onclick="doSignOut()">
+              <div class="app-acct-row-l">
+                <div class="app-acct-row-icon" style="background:rgba(192,57,43,.08)">🚪</div>
+                <div><div class="app-acct-row-title" style="color:#e05050">Sign Out</div></div>
+              </div><span style="color:var(--muted)">›</span>
+            </div>
+          </div>
+          <!-- Edit profile form (hidden by default) -->
+          <div id="edit-profile-form" style="display:none;padding:0 28px 28px;">
+            <h3 style="font-family:'Playfair Display',serif;color:var(--cream);margin-bottom:16px;">Edit Profile</h3>
+            <input class="auth-inp" id="edit-name" type="text" placeholder="Full name" style="margin-bottom:10px;width:100%;"/>
+            <div id="edit-profile-err" class="auth-err"></div>
+            <button class="auth-submit" style="max-width:200px;" onclick="saveProfile()">Save Changes</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ══════════════════════════════════════════════════
+//  LUMINARY — Full Supabase Integration
+// ══════════════════════════════════════════════════
+
+const SUPA_URL = 'https://kbsrwrzxgrxzctpxyers.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtic3J3cnp4Z3J4emN0cHh5ZXJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5ODcxMjIsImV4cCI6MjA4ODU2MzEyMn0.hyaV6Rchq9YrVeoGrGl3sMsLQNddDlTprGiDRcXleCs';
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+// ── State ──────────────────────────────────────────
+let appUser    = null;   // auth user
+let appProfile = null;   // profiles row
+let allTutors  = [];     // cached tutors
+let activeConvoTutorId   = null;
+let activeConvoTutorName = null;
+let msgRealtimeSub       = null;
+let sesFilter = 'upcoming';
+let signupRole = 'student';
+
+// ── INIT ───────────────────────────────────────────
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    appUser = session.user;
+    await loadProfile();
+  }
+  sb.auth.onAuthStateChange(async (_event, session) => {
+    appUser = session?.user ?? null;
+    if (appUser) {
+      await loadProfile();
+      refreshNavState();
+    } else {
+      appProfile = null;
+      refreshNavState();
+    }
+  });
+})();
+
+async function loadProfile() {
+  const { data } = await sb.from('profiles').select('*').eq('id', appUser.id).single();
+  appProfile = data;
+}
+
+function refreshNavState() {
+  // update nav button label
+  const btn = document.querySelector('.nav-app-btn');
+  if (btn) btn.textContent = appUser ? 'Open App ↗' : 'Launch App ↗';
+}
+
+// ── CURSOR ─────────────────────────────────────────
+const cur = document.getElementById('cursor');
+const noSysCursor = document.createElement('style');
+noSysCursor.textContent = '*{ cursor: none !important; }';
+document.head.appendChild(noSysCursor);
+cur.style.pointerEvents = 'none';
+
+let mouseX = 0, mouseY = 0, currentSize = 13, isBtn = false, lastSampleTime = 0;
+const DARK_OVERRIDES = ['.feature-visual','.fv-body','.fv-header','.fv-cal','.price-card.featured','.fv-bubble','.section-dark-cap','#auth-gate','#app-modal'];
+const LIGHT_SECTIONS = ['.feature-split','.pricing-section','.cta-band'];
+
+function getCursorColor(x, y) {
+  const el = document.elementFromPoint(x, y);
+  if (!el) return '#e8d97a';
+  if (DARK_OVERRIDES.some(s => el.closest(s))) return '#e8d97a';
+  if (LIGHT_SECTIONS.some(s => el.closest(s))) return '#0e0c0a';
+  return '#e8d97a';
+}
+document.addEventListener('mousemove', e => {
+  mouseX = e.clientX; mouseY = e.clientY;
+  cur.style.left = mouseX + 'px'; cur.style.top = mouseY + 'px';
+});
+function tick(ts) {
+  requestAnimationFrame(tick);
+  if (ts - lastSampleTime > 40) {
+    lastSampleTime = ts;
+    const color = getCursorColor(mouseX, mouseY);
+    cur.style.backgroundColor = isBtn ? 'transparent' : color;
+    cur.style.borderColor = color;
+    const el = document.elementFromPoint(mouseX, mouseY);
+    isBtn = el ? !!el.closest('button,a,[onclick],.ob-role-card,.tutor-card,.testi-card,.price-card,.step,.ob-q-item,.ob-cl-item,.filter-btn,.ob-close,.nav-app-btn,.app-tcard,.app-nav-item,.app-msg-row,.app-acct-row,.auth-role-pill,.auth-tab') : false;
+  }
+  const targetSize = isBtn ? 44 : 13;
+  currentSize += (targetSize - currentSize) * 0.15;
+  cur.style.width = currentSize + 'px';
+  cur.style.height = currentSize + 'px';
+}
+requestAnimationFrame(tick);
+
+// ── NAV SCROLL ─────────────────────────────────────
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 40); });
+
+// ── SCROLL REVEAL ──────────────────────────────────
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: .15 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// ── COUNTER ANIMATION ──────────────────────────────
+function animateNum(el, target, suffix, decimals = 0) {
+  let s = 0; const d = 1600; const go = ts => {
+    if (!s) s = ts;
+    const p = Math.min((ts - s) / d, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.innerHTML = (decimals ? (ease * target).toFixed(decimals) : Math.round(ease * target)) + `<span>${suffix}</span>`;
+    if (p < 1) requestAnimationFrame(go);
+  }; requestAnimationFrame(go);
+}
+const statsObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      statsObs.unobserve(e.target);
+      const nums = e.target.querySelectorAll('.hero-stat-num');
+      setTimeout(() => {
+        animateNum(nums[0], 4.9, '★', 1);
+        animateNum(nums[1], 920, '+');
+        animateNum(nums[2], 136, '+');
+        animateNum(nums[3], 98, '%');
+      }, 100);
+    }
+  });
+}, { threshold: .5 });
+const statsEl = document.querySelector('.hero-stats');
+if (statsEl) statsObs.observe(statsEl);
+
+// ══════════════════════════════════════════════════
+//  AUTH GATE
+// ══════════════════════════════════════════════════
+function openAuthGate() {
+  document.getElementById('auth-gate').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeAuthGate() {
+  document.getElementById('auth-gate').classList.remove('active');
+  document.body.style.overflow = '';
+}
+function authTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.auth-tab')[tab === 'login' ? 0 : 1].classList.add('active');
+  document.getElementById('auth-login').style.display  = tab === 'login'  ? '' : 'none';
+  document.getElementById('auth-signup').style.display = tab === 'signup' ? '' : 'none';
+}
+function setAuthRole(r) {
+  signupRole = r;
+  document.getElementById('arp-student').classList.toggle('active', r === 'student');
+  document.getElementById('arp-tutor').classList.toggle('active',   r === 'tutor');
+}
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value;
+  const err   = document.getElementById('auth-err-login');
+  const btn   = document.getElementById('login-btn');
+  err.textContent = '';
+  if (!email || !pass) { err.textContent = 'Please fill in all fields.'; return; }
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+  btn.disabled = false; btn.textContent = 'Sign In →';
+  if (error) { err.textContent = error.message; return; }
+  closeAuthGate();
+  openApp();
+}
+async function doSignup() {
+  const name  = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const pass  = document.getElementById('signup-pass').value;
+  const err   = document.getElementById('auth-err-signup');
+  const btn   = document.getElementById('signup-btn');
+  err.textContent = '';
+  if (!name || !email || !pass) { err.textContent = 'Please fill in all fields.'; return; }
+  if (pass.length < 6) { err.textContent = 'Password must be at least 6 characters.'; return; }
+  btn.disabled = true; btn.textContent = 'Creating account…';
+  const { error } = await sb.auth.signUp({
+    email, password: pass,
+    options: { data: { full_name: name, role: signupRole } }
+  });
+  btn.disabled = false; btn.textContent = 'Create Account →';
+  if (error) { err.textContent = error.message; return; }
+  closeAuthGate();
+  openApp();
+}
+
+// ══════════════════════════════════════════════════
+//  APP MODAL
+// ══════════════════════════════════════════════════
+async function openApp() {
+  if (!appUser) { openAuthGate(); return; }
+  document.getElementById('app-modal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  await loadProfile();
+  renderAccountPanel();
+  loadTutors();
+  loadMessages();
+  loadSessions();
+}
+function closeApp() {
+  document.getElementById('app-modal').classList.remove('active');
+  document.body.style.overflow = '';
+  if (msgRealtimeSub) { sb.removeChannel(msgRealtimeSub); msgRealtimeSub = null; }
+}
+function switchPanel(id, el) {
+  document.querySelectorAll('.app-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  document.querySelectorAll('.app-nav-item').forEach(n => n.classList.remove('active'));
+  if (el) el.closest('.app-nav-item')?.classList.add('active');
+  else {
+    document.querySelectorAll('.app-nav-item').forEach(n => {
+      if (n.textContent.trim().toLowerCase().startsWith(id.slice(0,4))) n.classList.add('active');
+    });
+  }
+}
+document.getElementById('app-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('app-modal')) closeApp();
+});
+
+// ══════════════════════════════════════════════════
+//  EXPLORE — Tutors
+// ══════════════════════════════════════════════════
+async function loadTutors() {
+  const { data, error } = await sb.from('tutors').select('*').order('rating', { ascending: false });
+  if (error || !data) { document.getElementById('tutor-grid').innerHTML = '<div class="app-empty">Could not load tutors.</div>'; return; }
+  allTutors = data;
+  renderTutorFilters();
+  renderTutors(allTutors);
+}
+
+function renderTutorFilters() {
+  const allSubjects = [...new Set(allTutors.flatMap(t => t.subjects || []))].sort();
+  const row = document.getElementById('subject-filters');
+  row.innerHTML = '<div class="app-filter-pill on" data-subj="all" onclick="filterBySubject(this)">All</div>' +
+    allSubjects.map(s => `<div class="app-filter-pill" data-subj="${s}" onclick="filterBySubject(this)">${s}</div>`).join('');
+}
+
+function filterBySubject(el) {
+  document.querySelectorAll('#subject-filters .app-filter-pill').forEach(p => p.classList.remove('on'));
+  el.classList.add('on');
+  const subj = el.dataset.subj;
+  const query = document.getElementById('tutor-search').value.toLowerCase();
+  const filtered = allTutors.filter(t => {
+    const matchSubj = subj === 'all' || (t.subjects || []).includes(subj);
+    const matchQ    = !query || t.name.toLowerCase().includes(query) || (t.subjects || []).some(s => s.toLowerCase().includes(query));
+    return matchSubj && matchQ;
+  });
+  renderTutors(filtered);
+}
+
+function filterTutors() {
+  const query = document.getElementById('tutor-search').value.toLowerCase();
+  const activePill = document.querySelector('#subject-filters .app-filter-pill.on');
+  const subj = activePill ? activePill.dataset.subj : 'all';
+  const filtered = allTutors.filter(t => {
+    const matchSubj = subj === 'all' || (t.subjects || []).includes(subj);
+    const matchQ    = !query || t.name.toLowerCase().includes(query) || (t.subjects || []).some(s => s.toLowerCase().includes(query));
+    return matchSubj && matchQ;
+  });
+  renderTutors(filtered);
+}
+
+function renderTutors(tutors) {
+  const grid = document.getElementById('tutor-grid');
+  if (!tutors.length) { grid.innerHTML = '<div class="app-empty">No tutors found.</div>'; return; }
+  grid.innerHTML = tutors.map(t => `
+    <div class="app-tcard" onclick="openTutorDetail('${t.id}')">
+      <div class="app-tcard-media" style="background:${t.bg_gradient || 'linear-gradient(135deg,#1a3a5c,#0e2238)'}">
+        <span>${t.emoji || '🌟'}</span>
+        <div class="app-tcard-overlay"></div>
+        <div class="app-tcard-name">${t.name}</div>
+        <div class="app-tcard-rating">⭐ ${t.rating}</div>
+      </div>
+      <div class="app-tcard-body">
+        <div class="app-tcard-subjects">${(t.subjects || []).slice(0,2).map(s => `<span class="app-tcard-subj">${s}</span>`).join('')}</div>
+        <div class="app-tcard-rate">$${t.rate}<span>/hr</span></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openTutorDetail(tutorId) {
+  const t = allTutors.find(x => x.id === tutorId);
+  if (!t) return;
+  document.getElementById('tutor-detail-content').innerHTML = `
+    <button class="td-back" onclick="switchPanel('explore', document.querySelector('.app-nav-item'))">← All Tutors</button>
+    <div class="td-hero" style="background:${t.bg_gradient}">
+      <div class="td-hero-emoji">${t.emoji}</div>
+      <div class="td-hero-overlay"></div>
+      <div class="td-hero-name">${t.name}</div>
+      <div class="td-hero-rating">⭐ ${t.rating} (${t.reviews} reviews)</div>
+    </div>
+    <div class="td-body">
+      <div class="td-subjects">${(t.subjects || []).map(s => `<span class="td-subj">${s}</span>`).join('')}</div>
+      <div class="td-bio">${t.bio || ''}</div>
+      <div class="td-rate-row">
+        <div class="td-rate">$${t.rate}<span>/hr</span></div>
+      </div>
+      <div class="td-actions">
+        <button class="td-btn-book" onclick="openBooking('${t.id}')">Book a Session</button>
+        <button class="td-btn-msg"  onclick="openConvoWith('${t.id}','${t.name}')">Message</button>
+      </div>
+    </div>
+  `;
+  switchPanel('tutor-detail', null);
+  document.querySelectorAll('.app-nav-item').forEach(n => { if (n.textContent.trim().startsWith('Expl')) n.classList.add('active'); });
+}
+
+// ══════════════════════════════════════════════════
+//  BOOKING
+// ══════════════════════════════════════════════════
+function openBooking(tutorId) {
+  const t = allTutors.find(x => x.id === tutorId);
+  if (!t) return;
+  // Generate next 14 days of time slots
+  const slots = [];
+  const now = new Date();
+  for (let d = 1; d <= 14; d++) {
+    const day = new Date(now); day.setDate(now.getDate() + d);
+    [9,10,11,14,15,16,17,18].forEach(h => {
+      const dt = new Date(day); dt.setHours(h, 0, 0, 0);
+      slots.push(dt);
+    });
+  }
+  document.getElementById('booking-content').innerHTML = `
+    <button class="td-back" onclick="openTutorDetail('${t.id}')">← Back to ${t.name}</button>
+    <div class="booking-wrap">
+      <h3>Book with ${t.name}</h3>
+      <p class="booking-sub">$${t.rate}/hr · Select a time to get started</p>
+      <div class="booking-field">
+        <div class="booking-label">Subject</div>
+        <select class="booking-inp" id="book-subject">
+          ${(t.subjects || []).map(s => `<option value="${s}">${s}</option>`).join('')}
+        </select>
+      </div>
+      <div class="booking-field">
+        <div class="booking-label">Date & Time</div>
+        <select class="booking-inp" id="book-slot">
+          ${slots.map(s => `<option value="${s.toISOString()}">${s.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})} at ${s.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</option>`).join('')}
+        </select>
+      </div>
+      <div class="booking-field">
+        <div class="booking-label">Notes (optional)</div>
+        <input class="booking-inp" id="book-notes" placeholder="Topics you'd like to cover…"/>
+      </div>
+      <div id="book-err" style="color:#e05050;font-size:12px;min-height:18px;"></div>
+      <button class="booking-confirm" onclick="confirmBooking('${t.id}', ${t.rate})">Confirm Booking — $${t.rate}</button>
+    </div>
+  `;
+  switchPanel('booking', null);
+}
+
+async function confirmBooking(tutorId, rate) {
+  const subject     = document.getElementById('book-subject').value;
+  const slot        = document.getElementById('book-slot').value;
+  const notes       = document.getElementById('book-notes').value;
+  const btn         = document.querySelector('.booking-confirm');
+  const err         = document.getElementById('book-err');
+  btn.disabled = true; btn.textContent = 'Booking…';
+  const { error } = await sb.from('sessions').insert({
+    student_id: appUser.id,
+    tutor_id: tutorId,
+    subject,
+    scheduled_at: slot,
+    rate,
+    notes,
+    status: 'upcoming'
+  });
+  btn.disabled = false;
+  if (error) { err.textContent = error.message; btn.textContent = 'Confirm Booking — $' + rate; return; }
+  document.getElementById('booking-content').innerHTML = `
+    <div class="booking-success">
+      <div class="booking-success-icon">🎉</div>
+      <h3>You're booked!</h3>
+      <p style="margin-bottom:20px;">Your session has been confirmed. You'll find it in My Sessions.</p>
+      <button class="booking-confirm" style="max-width:220px;" onclick="switchPanel('sessions', document.querySelectorAll('.app-nav-item')[2]);loadSessions()">View My Sessions</button>
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════════════════
+//  MESSAGES
+// ══════════════════════════════════════════════════
+async function loadMessages() {
+  const { data, error } = await sb.from('messages')
+    .select('*, tutor:tutor_id(id, name, emoji, bg_gradient)')
+    .or(`sender_id.eq.${appUser.id},recipient_id.eq.${appUser.id}`)
+    .order('created_at', { ascending: false });
+
+  if (error) { document.getElementById('msg-list-wrap').innerHTML = '<div class="app-empty">Could not load messages.</div>'; return; }
+
+  // Group by tutor
+  const byTutor = {};
+  (data || []).forEach(m => {
+    const tid = m.tutor_id;
+    if (!tid) return;
+    if (!byTutor[tid]) byTutor[tid] = { tutor: m.tutor, messages: [], unread: 0 };
+    byTutor[tid].messages.push(m);
+    if (!m.read && m.recipient_id === appUser.id) byTutor[tid].unread++;
+  });
+
+  const convos = Object.values(byTutor);
+  const totalUnread = convos.reduce((a, c) => a + c.unread, 0);
+  const badge = document.getElementById('msg-badge');
+  badge.style.display = totalUnread > 0 ? 'flex' : 'none';
+  badge.textContent = totalUnread;
+
+  renderConvoList(convos);
+  subscribeMessages();
+}
+
+function renderConvoList(convos) {
+  const wrap = document.getElementById('msg-list-wrap');
+  if (!convos.length) {
+    wrap.innerHTML = '<div class="app-empty">No conversations yet.<br>Message a tutor from their profile.</div>';
+    return;
+  }
+  wrap.innerHTML = '<div class="app-msg-list">' + convos.map(c => {
+    const last = c.messages[0];
+    const time = new Date(last.created_at).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    return `
+      <div class="app-msg-row" onclick="openConvoWith('${c.tutor.id}','${c.tutor.name}')">
+        <div class="app-msg-av" style="background:${c.tutor.bg_gradient || '#1a3a5c'}">${c.tutor.emoji || '🌟'}</div>
+        <div class="app-msg-info">
+          <div class="app-msg-name">${c.tutor.name}</div>
+          <div class="app-msg-preview ${c.unread ? 'unread' : ''}">${last.sender_id === appUser.id ? 'You: ' : ''}${last.content}</div>
+        </div>
+        <div class="app-msg-meta">
+          <div class="app-msg-time">${time}</div>
+          ${c.unread ? `<div class="app-msg-badge">${c.unread}</div>` : ''}
+        </div>
+      </div>`;
+  }).join('') + '</div>';
+}
+
+function subscribeMessages() {
+  if (msgRealtimeSub) sb.removeChannel(msgRealtimeSub);
+  msgRealtimeSub = sb.channel('messages-realtime')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, () => {
+      loadMessages();
+      if (activeConvoTutorId) loadConvoMessages();
+    })
+    .subscribe();
+}
+
+async function openConvoWith(tutorId, tutorName) {
+  activeConvoTutorId   = tutorId;
+  activeConvoTutorName = tutorName;
+  document.getElementById('convo-title').textContent = tutorName;
+  document.getElementById('msg-list-wrap').style.display = 'none';
+  document.querySelector('.app-msg-header').style.display = 'none';
+  const cv = document.getElementById('convo-view');
+  cv.style.display = 'flex';
+  await loadConvoMessages();
+  // Mark messages as read
+  await sb.from('messages')
+    .update({ read: true })
+    .eq('recipient_id', appUser.id)
+    .eq('tutor_id', tutorId);
+  loadMessages();
+}
+
+function closeConvo() {
+  activeConvoTutorId = null;
+  document.getElementById('convo-view').style.display = 'none';
+  document.getElementById('msg-list-wrap').style.display = '';
+  document.querySelector('.app-msg-header').style.display = '';
+}
+
+async function loadConvoMessages() {
+  const { data } = await sb.from('messages')
+    .select('*')
+    .eq('tutor_id', activeConvoTutorId)
+    .or(`sender_id.eq.${appUser.id},recipient_id.eq.${appUser.id}`)
+    .order('created_at', { ascending: true });
+
+  const box = document.getElementById('convo-messages');
+  if (!data || !data.length) { box.innerHTML = '<div class="app-empty" style="padding:20px;font-size:12px;">Send the first message!</div>'; return; }
+  box.innerHTML = data.map(m => {
+    const mine = m.sender_id === appUser.id;
+    const time = new Date(m.created_at).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    return `<div style="display:flex;flex-direction:column;align-items:${mine ? 'flex-end' : 'flex-start'}">
+      <div class="convo-bubble ${mine ? 'mine' : 'theirs'}">${m.content}</div>
+      <div class="convo-bubble-time" style="align-self:${mine ? 'flex-end' : 'flex-start'}">${time}</div>
+    </div>`;
+  }).join('');
+  box.scrollTop = box.scrollHeight;
+}
+
+async function sendMessage() {
+  const inp = document.getElementById('convo-inp');
+  const content = inp.value.trim();
+  if (!content || !activeConvoTutorId) return;
+  inp.value = '';
+  await sb.from('messages').insert({
+    sender_id: appUser.id,
+    recipient_id: appUser.id, // self for now; real tutors would have user_id
+    tutor_id: activeConvoTutorId,
+    content
+  });
+  await loadConvoMessages();
+}
+
+function filterMessages() {
+  // client-side filter on rendered list
+  const q = document.getElementById('msg-search-inp').value.toLowerCase();
+  document.querySelectorAll('.app-msg-row').forEach(row => {
+    const name = row.querySelector('.app-msg-name')?.textContent.toLowerCase() || '';
+    row.style.display = name.includes(q) ? '' : 'none';
+  });
+}
+
+// ══════════════════════════════════════════════════
+//  SESSIONS
+// ══════════════════════════════════════════════════
+async function loadSessions() {
+  const { data, error } = await sb.from('sessions')
+    .select('*, tutor:tutor_id(id, name, emoji, bg_gradient, subjects)')
+    .eq('student_id', appUser.id)
+    .order('scheduled_at', { ascending: true });
+
+  if (error) { document.getElementById('sessions-list').innerHTML = '<div class="app-empty">Could not load sessions.</div>'; return; }
+  renderSessions(data || []);
+}
+
+function sesTab(filter, el) {
+  sesFilter = filter;
+  document.querySelectorAll('.sess-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  loadSessions();
+}
+
+function renderSessions(sessions) {
+  const list = document.getElementById('sessions-list');
+  const filtered = sessions.filter(s => s.status === sesFilter);
+  if (!filtered.length) {
+    list.innerHTML = `<div class="app-empty">${sesFilter === 'upcoming' ? 'No upcoming sessions. Book one below!' : 'No completed sessions yet.'}</div>`;
+    return;
+  }
+  list.innerHTML = filtered.map(s => {
+    const dt = new Date(s.scheduled_at);
+    const dateStr = dt.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+    const timeStr = dt.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    const isUpcoming = s.status === 'upcoming';
+    return `
+      <div class="app-sess-card" style="${!isUpcoming ? 'opacity:.6' : ''}">
+        <div class="app-sess-av" style="background:${s.tutor?.bg_gradient || '#1a3a5c'}">${s.tutor?.emoji || '🌟'}</div>
+        <div class="app-sess-info">
+          <div class="app-sess-name">${s.tutor?.name || 'Tutor'} — ${s.subject || ''}</div>
+          <div class="app-sess-detail">
+            <span>📅 ${dateStr}</span>
+            <span>⏰ ${timeStr}</span>
+            <span>💰 $${s.rate || ''}</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+          <div class="app-sess-status" style="${!isUpcoming ? 'background:rgba(45,122,79,.1);color:#3a9e67;' : ''}">${isUpcoming ? 'Upcoming' : 'Completed'}</div>
+          ${isUpcoming ? `<button class="app-sess-book" style="font-size:10px;padding:6px 12px;" onclick="cancelSession('${s.id}')">Cancel</button>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+async function cancelSession(id) {
+  if (!confirm('Cancel this session?')) return;
+  await sb.from('sessions').update({ status: 'cancelled' }).eq('id', id);
+  loadSessions();
+}
+
+// ══════════════════════════════════════════════════
+//  ACCOUNT
+// ══════════════════════════════════════════════════
+function renderAccountPanel() {
+  if (!appProfile) return;
+  document.getElementById('acct-name').textContent  = appProfile.full_name || '—';
+  document.getElementById('acct-email').textContent = appUser?.email || '—';
+  document.getElementById('acct-role').textContent  = appProfile.role === 'tutor' ? '🧑‍🏫 Tutor' : '🎓 Student';
+  document.getElementById('acct-av').textContent    = appProfile.role === 'tutor' ? '🧑‍🏫' : '👤';
+  document.getElementById('acct-edit-sub').textContent = appProfile.full_name || '';
+  document.getElementById('edit-name').value = appProfile.full_name || '';
+}
+
+function openEditProfile() {
+  const form = document.getElementById('edit-profile-form');
+  form.style.display = form.style.display === 'none' ? '' : 'none';
+}
+
+async function saveProfile() {
+  const name = document.getElementById('edit-name').value.trim();
+  const err  = document.getElementById('edit-profile-err');
+  err.textContent = '';
+  if (!name) { err.textContent = 'Name cannot be empty.'; return; }
+  const { error } = await sb.from('profiles').update({ full_name: name }).eq('id', appUser.id);
+  if (error) { err.textContent = error.message; return; }
+  appProfile.full_name = name;
+  renderAccountPanel();
+  document.getElementById('edit-profile-form').style.display = 'none';
+}
+
+async function doSignOut() {
+  await sb.auth.signOut();
+  closeApp();
+  appUser = null; appProfile = null;
+  refreshNavState();
+}
+
+// ══════════════════════════════════════════════════
+//  ONBOARDING (waitlist now saves to Supabase)
+// ══════════════════════════════════════════════════
+const STUDENT_Q = ["Do you feel a sense of despair when report cards come out?","Do you feel your teachers are unable to help you?","Do you feel burned out from school?","Do you hate going to class?","Do you struggle to stay focused while studying?","Do you feel like your grades don't improve no matter how hard you try?","Do you feel anxious before exams?","Do you feel like you've fallen too far behind to catch up?"];
+const TUTOR_Q   = ["Do you struggle to make a steady income tutoring?","Do you find it hard to find new clients?","Do you spend too much time on admin instead of teaching?","Do you feel like your skills are undervalued?","Do you find it hard to stand out from other tutors?","Do you struggle to retain students long-term?"];
+const STUDENT_CL = ["I struggle to keep up with class material","I lack confidence before tests","I feel like I learn differently than how I'm taught","I want better grades but don't know where to start","I need someone who actually listens","I get overwhelmed easily when studying","I struggle with specific subjects","I want to improve my study habits","I need help preparing for exams","I feel unsupported at school"];
+const TUTOR_CL   = ["I spend too much time finding clients","I want to focus purely on teaching","I need a reliable stream of students","Marketing myself feels overwhelming","I want to build a sustainable tutoring practice","I find it hard to set competitive rates","I want more visibility and credibility","I struggle with scheduling and admin","I want to help more students but lack the reach"];
+
+let currentRole = null, qAnswers = [], clChecked = [], currentStep = 0;
+
+function openOnboarding() {
+  document.getElementById('ob-overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  goStep(0);
+}
+function closeOnboarding() {
+  document.getElementById('ob-overlay').classList.remove('active');
+  document.body.style.overflow = '';
+  currentRole = null; qAnswers = []; clChecked = [];
+  document.getElementById('rc-student').classList.remove('selected');
+  document.getElementById('rc-tutor').classList.remove('selected');
+  document.getElementById('ob-next0').disabled = true;
+  document.getElementById('ob-waitlist-form').style.display = '';
+  document.getElementById('ob-success').style.display = 'none';
+  document.getElementById('ob-email').value = '';
+}
+function goStep(n) {
+  const cur2 = document.querySelector('.ob-step.active');
+  if (cur2 && n !== currentStep) {
+    cur2.style.animation = 'obOut .25s ease both';
+    setTimeout(() => { cur2.style.animation = ''; cur2.classList.remove('active'); showStep(n); }, 220);
+  } else showStep(n);
+  currentStep = n;
+}
+function showStep(n) {
+  document.querySelectorAll('.ob-step').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('ob-s' + n);
+  if (!el) return;
+  el.style.animation = 'obIn .42s cubic-bezier(.22,1,.36,1) both';
+  el.classList.add('active');
+  if (n === 1) buildQuestions();
+  if (n === 2) buildChecklist();
+  if (n === 3) buildReveal();
+}
+function selectRole(r) {
+  currentRole = r;
+  document.getElementById('rc-student').classList.toggle('selected', r === 'student');
+  document.getElementById('rc-tutor').classList.toggle('selected', r === 'tutor');
+  document.getElementById('ob-next0').disabled = false;
+  document.getElementById('ob-q-title').innerHTML = r === 'student' ? "Let's understand <em>where you are.</em>" : "Tell us about <em>your situation.</em>";
+}
+function buildQuestions() {
+  const qs = currentRole === 'student' ? STUDENT_Q : TUTOR_Q;
+  const list = document.getElementById('ob-q-list');
+  list.innerHTML = ''; qAnswers = [];
+  qs.forEach((q, i) => {
+    const d = document.createElement('div'); d.className = 'ob-q-item';
+    d.innerHTML = `<div class="ob-q-dot"><div class="ob-q-dot-in"></div></div><div class="ob-q-text">${q}</div>`;
+    d.onclick = () => { if (qAnswers.includes(i)) { qAnswers = qAnswers.filter(x => x !== i); d.classList.remove('on'); } else { qAnswers.push(i); d.classList.add('on'); } };
+    list.appendChild(d);
+  });
+}
+function buildChecklist() {
+  const cl = currentRole === 'student' ? STUDENT_CL : TUTOR_CL;
+  const list = document.getElementById('ob-cl-list');
+  list.innerHTML = ''; clChecked = [];
+  cl.forEach((item, i) => {
+    const d = document.createElement('div'); d.className = 'ob-cl-item';
+    d.innerHTML = `<div class="ob-cl-box"><span class="ob-cl-check">✓</span></div><span class="ob-cl-lbl">${item}</span>`;
+    d.querySelector('.ob-cl-check').style.display = 'none';
+    d.onclick = () => {
+      if (clChecked.includes(i)) { clChecked = clChecked.filter(x => x !== i); d.classList.remove('on'); d.querySelector('.ob-cl-box').style.background = ''; d.querySelector('.ob-cl-box').style.borderColor = ''; d.querySelector('.ob-cl-check').style.display = 'none'; }
+      else { clChecked.push(i); d.classList.add('on'); d.querySelector('.ob-cl-check').style.display = 'block'; }
+    };
+    list.appendChild(d);
+  });
+}
+function buildReveal() {
+  const cl = currentRole === 'student' ? STUDENT_CL : TUTOR_CL;
+  const sel = clChecked.map(i => cl[i]);
+  const tags = document.getElementById('ob-tags');
+  tags.innerHTML = '';
+  (sel.length ? sel : ['Open to everything']).forEach(s => { const t = document.createElement('span'); t.className = 'ob-tag'; t.textContent = s; tags.appendChild(t); });
+  if (currentRole === 'tutor') {
+    document.getElementById('ob-reveal-title').innerHTML = 'We shoulder the <em>burdens</em> of being a tutor.';
+    document.getElementById('ob-reveal-sub').textContent = "You focus on teaching. We'll handle finding students, scheduling, and payments.";
+  } else {
+    document.getElementById('ob-reveal-title').innerHTML = 'Our tutors help you perform — and feel <em>confident</em> you can succeed.';
+    document.getElementById('ob-reveal-sub').textContent = 'In school and in life — that confidence is everything. Luminary connects you with the right person.';
+  }
+}
+async function submitWaitlist() {
+  const email = document.getElementById('ob-email').value.trim();
+  if (!email || !email.includes('@')) {
+    document.getElementById('ob-email').style.outline = '2px solid #c0392b';
+    document.getElementById('ob-email').placeholder = 'Please enter a valid email';
+    setTimeout(() => { document.getElementById('ob-email').style.outline = ''; }, 1600);
+    return;
+  }
+  const btn = document.querySelector('.ob-email-btn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  await sb.from('waitlist').upsert({ email, role: currentRole });
+  btn.disabled = false;
+  document.getElementById('ob-waitlist-form').style.display = 'none';
+  document.getElementById('ob-success').style.display = 'flex';
+}
+
+// ── Hook all CTA buttons to open onboarding / app
+document.querySelectorAll('.btn-primary,.btn-ink,.btn-outline-ink').forEach(el => {
+  el.addEventListener('click', e => { e.preventDefault(); appUser ? openApp() : openOnboarding(); });
+});
+document.querySelector('.nav-cta')?.addEventListener('click', e => { e.preventDefault(); appUser ? openApp() : openOnboarding(); });
+</script>
+</body>
+</html>
