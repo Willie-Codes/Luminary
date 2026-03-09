@@ -1967,7 +1967,13 @@ nav.scrolled .nav-app-btn{border-color:rgba(255,255,255,.15);}
           <!-- Edit profile form (hidden by default) -->
           <div id="edit-profile-form" style="display:none;padding:0 28px 28px;">
             <h3 style="font-family:'Playfair Display',serif;color:var(--cream);margin-bottom:16px;">Edit Profile</h3>
-            <input class="auth-inp" id="edit-name" type="text" placeholder="Full name" style="margin-bottom:10px;width:100%;"/>
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Full Name</div>
+            <input class="auth-inp" id="edit-name" type="text" placeholder="Full name" style="margin-bottom:18px;width:100%;box-sizing:border-box;"/>
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">I am a…</div>
+            <div style="display:flex;gap:8px;margin-bottom:18px;">
+              <button id="edit-role-student" class="app-role-toggle active" onclick="setEditRole('student')">🎓 Student</button>
+              <button id="edit-role-tutor"   class="app-role-toggle"        onclick="setEditRole('tutor')">🧑‍🏫 Tutor</button>
+            </div>
             <div id="edit-profile-err" class="auth-err"></div>
             <button class="auth-submit" style="max-width:200px;" onclick="saveProfile()">Save Changes</button>
           </div>
@@ -2310,13 +2316,17 @@ function openTutorDetail(tutorId) {
         <button class="td-btn-msg"  onclick="openConvoWith('${t.id}','${t.name}')">Message</button>
       </div>
       <div class="td-review-section" id="review-section-${t.id}">
-        <div class="td-review-title">Leave a Review</div>
+        <div class="td-review-title">Rate your experience</div>
+        <div class="td-review-sub">Your review helps other students find great tutors</div>
         <div class="td-stars" id="stars-${t.id}">
-          ${[1,2,3,4,5].map(n => `<span class="td-star" data-n="${n}" onclick="setReviewStar('${t.id}',${n})">☆</span>`).join('')}
+          ${[1,2,3,4,5].map(n => `<span class="td-star" data-n="${n}"
+            onmouseover="hoverStar('${t.id}',${n})"
+            onmouseout="unhoverStar('${t.id}')"
+            onclick="setReviewStar('${t.id}',${n})">★</span>`).join('')}
         </div>
-        <textarea class="td-review-inp" id="review-inp-${t.id}" placeholder="Share your experience with ${t.name}…"></textarea>
-        <button class="td-btn-book" style="max-width:160px;font-size:13px;" onclick="submitReview('${t.id}')">Submit Review</button>
-        <div id="review-msg-${t.id}" style="font-size:12px;margin-top:8px;"></div>
+        <textarea class="td-review-inp" id="review-inp-${t.id}" placeholder="What did you love? What could be better?"></textarea>
+        <button class="td-review-submit" onclick="submitReview('${t.id}')">Submit Review</button>
+        <div id="review-msg-${t.id}" style="font-size:12px;margin-top:10px;min-height:16px;"></div>
       </div>
     </div>
   `;
@@ -2471,13 +2481,18 @@ function subscribeMessages() {
 async function openConvoWith(tutorId, tutorName) {
   activeConvoTutorId   = tutorId;
   activeConvoTutorName = tutorName;
+  // Switch to messages panel first
+  switchPanel('messages', null);
+  document.querySelectorAll('.app-nav-item').forEach(n => {
+    if (n.textContent.trim().startsWith('Mess')) n.classList.add('active');
+    else n.classList.remove('active');
+  });
   document.getElementById('convo-title').textContent = tutorName;
   document.getElementById('msg-list-wrap').style.display = 'none';
   document.querySelector('.app-msg-header').style.display = 'none';
   const cv = document.getElementById('convo-view');
   cv.style.display = 'flex';
   await loadConvoMessages();
-  // Mark messages as read (sender owns them)
   await sb.from('messages')
     .update({ read: true })
     .eq('sender_id', appUser.id)
@@ -2665,11 +2680,24 @@ async function loadTutorEarnings() {
 // ── REVIEWS ────────────────────────────────────────
 let reviewStars = {};
 
+function hoverStar(tutorId, n) {
+  document.querySelectorAll(`#stars-${tutorId} .td-star`).forEach((s, i) => {
+    s.style.color = i < n ? 'var(--gold-l)' : 'rgba(255,255,255,.15)';
+    s.style.transform = i < n ? 'scale(1.15)' : '';
+  });
+}
+function unhoverStar(tutorId) {
+  const selected = reviewStars[tutorId] || 0;
+  document.querySelectorAll(`#stars-${tutorId} .td-star`).forEach((s, i) => {
+    s.style.color = i < selected ? 'var(--gold)' : 'rgba(255,255,255,.15)';
+    s.style.transform = i < selected ? 'scale(1.1)' : '';
+  });
+}
 function setReviewStar(tutorId, n) {
   reviewStars[tutorId] = n;
   document.querySelectorAll(`#stars-${tutorId} .td-star`).forEach((s, i) => {
-    s.textContent = i < n ? '★' : '☆';
-    s.style.color = i < n ? 'var(--gold)' : 'var(--muted)';
+    s.style.color = i < n ? 'var(--gold)' : 'rgba(255,255,255,.15)';
+    s.style.transform = i < n ? 'scale(1.1)' : '';
   });
 }
 
@@ -2699,19 +2727,37 @@ async function submitReview(tutorId) {
   document.querySelectorAll(`#stars-${tutorId} .td-star`).forEach(s => { s.textContent='☆'; s.style.color=''; });
 }
 
+let editRole = null;
+
+function setEditRole(role) {
+  editRole = role;
+  document.getElementById('edit-role-student').classList.toggle('active', role === 'student');
+  document.getElementById('edit-role-tutor').classList.toggle('active', role === 'tutor');
+}
+
 function openEditProfile() {
   const form = document.getElementById('edit-profile-form');
-  form.style.display = form.style.display === 'none' ? '' : 'none';
+  const isHidden = form.style.display === 'none';
+  form.style.display = isHidden ? '' : 'none';
+  if (isHidden) {
+    // Pre-fill current values
+    document.getElementById('edit-name').value = appProfile?.full_name || '';
+    editRole = appProfile?.role || 'student';
+    setEditRole(editRole);
+  }
 }
 
 async function saveProfile() {
   const name = document.getElementById('edit-name').value.trim();
+  const role = editRole || appProfile?.role || 'student';
   const err  = document.getElementById('edit-profile-err');
   err.textContent = '';
   if (!name) { err.textContent = 'Name cannot be empty.'; return; }
-  const { error } = await sb.from('profiles').update({ full_name: name }).eq('id', appUser.id);
+  const { error } = await sb.from('profiles').update({ full_name: name, role }).eq('id', appUser.id);
   if (error) { err.textContent = error.message; return; }
   appProfile.full_name = name;
+  appProfile.role = role;
+  viewingRole = role;
   renderAccountPanel();
   document.getElementById('edit-profile-form').style.display = 'none';
 }
