@@ -1881,13 +1881,18 @@ nav.scrolled .nav-app-btn{border-color:rgba(255,255,255,.15);}
         <div class="app-panel" id="panel-account">
           <div class="app-acct-header" id="acct-header">
             <div class="app-acct-av" id="acct-av">👤</div>
-            <div>
+            <div style="flex:1">
               <div class="app-acct-name" id="acct-name">—</div>
               <div class="app-acct-email" id="acct-email">—</div>
               <div class="app-acct-role" id="acct-role">🎓 Student</div>
             </div>
           </div>
-          <div class="app-acct-rows">
+          <!-- Role toggle -->
+          <div style="display:flex;gap:8px;padding:0 28px 18px;">
+            <button id="role-toggle-student" class="app-role-toggle active" onclick="switchRole('student')">🎓 Student</button>
+            <button id="role-toggle-tutor"   class="app-role-toggle"        onclick="switchRole('tutor')">🧑‍🏫 Tutor</button>
+          </div>
+          <div class="app-acct-rows" id="acct-rows-student">
             <div class="app-acct-row" onclick="openEditProfile()">
               <div class="app-acct-row-l">
                 <div class="app-acct-row-icon" style="background:rgba(44,95,138,.1)">✏️</div>
@@ -1904,6 +1909,52 @@ nav.scrolled .nav-app-btn{border-color:rgba(255,255,255,.15);}
               <div class="app-acct-row-l">
                 <div class="app-acct-row-icon" style="background:rgba(45,122,79,.1)">💬</div>
                 <div><div class="app-acct-row-title">Messages</div><div class="app-acct-row-sub">Conversations with tutors</div></div>
+              </div><span style="color:var(--muted)">›</span>
+            </div>
+            <div class="app-acct-row" onclick="doSignOut()">
+              <div class="app-acct-row-l">
+                <div class="app-acct-row-icon" style="background:rgba(192,57,43,.08)">🚪</div>
+                <div><div class="app-acct-row-title" style="color:#e05050">Sign Out</div></div>
+              </div><span style="color:var(--muted)">›</span>
+            </div>
+          </div>
+          <!-- TUTOR PAYMENT PANEL -->
+          <div class="app-acct-rows" id="acct-rows-tutor" style="display:none">
+            <div style="padding:0 28px 18px;">
+              <div style="background:linear-gradient(135deg,#1a3a5c,#0e2238);border-radius:14px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden;">
+                <div style="font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;">Current Plan</div>
+                <div style="font-size:22px;font-family:'Playfair Display',serif;color:var(--cream);font-weight:700;">Free Tier</div>
+                <div style="font-size:12px;color:var(--muted);margin-top:4px;">Luminary takes 20% of each session</div>
+                <div style="position:absolute;right:-20px;top:-20px;font-size:80px;opacity:.06;">💰</div>
+              </div>
+              <div style="background:linear-gradient(135deg,#7c5c1a,#c9a84c22);border:1px solid #c9a84c44;border-radius:14px;padding:20px;margin-bottom:16px;">
+                <div style="font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">⚡ Pro Subscription — $29/mo</div>
+                <div style="font-size:13px;color:var(--cream);margin-bottom:12px;line-height:1.5;">Keep <strong style="color:var(--gold)">100%</strong> of your earnings. No per-session cut — ever.</div>
+                <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px;">
+                  <div style="font-size:12px;color:var(--muted)">✓ Zero commission on all sessions</div>
+                  <div style="font-size:12px;color:var(--muted)">✓ Priority placement in search results</div>
+                  <div style="font-size:12px;color:var(--muted)">✓ Verified Pro badge on your profile</div>
+                  <div style="font-size:12px;color:var(--muted)">✓ Advanced scheduling & analytics</div>
+                </div>
+                <div style="font-size:11px;color:var(--gold);margin-bottom:10px;">At just 2 sessions/month you break even — every session after that is pure profit.</div>
+                <button class="booking-confirm" style="font-size:13px;" onclick="alert('Payments coming soon! You will be notified when Pro launches.')">Upgrade to Pro →</button>
+              </div>
+              <div style="background:rgba(255,255,255,.04);border-radius:12px;padding:16px;">
+                <div style="font-size:12px;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.08em;">Your Earnings This Month</div>
+                <div style="font-size:28px;font-family:'Playfair Display',serif;color:var(--cream);" id="tutor-earnings">$0</div>
+                <div style="font-size:11px;color:var(--muted);margin-top:4px;" id="tutor-earnings-sub">0 sessions completed</div>
+              </div>
+            </div>
+            <div class="app-acct-row" onclick="openEditProfile()">
+              <div class="app-acct-row-l">
+                <div class="app-acct-row-icon" style="background:rgba(44,95,138,.1)">✏️</div>
+                <div><div class="app-acct-row-title">Edit Profile</div><div class="app-acct-row-sub" id="acct-edit-sub2">Update your name</div></div>
+              </div><span style="color:var(--muted)">›</span>
+            </div>
+            <div class="app-acct-row" onclick="switchPanel('sessions',document.querySelectorAll('.app-nav-item')[2]);loadSessions()">
+              <div class="app-acct-row-l">
+                <div class="app-acct-row-icon" style="background:rgba(201,168,76,.1)">📅</div>
+                <div><div class="app-acct-row-title">My Bookings</div><div class="app-acct-row-sub">Sessions students booked</div></div>
               </div><span style="color:var(--muted)">›</span>
             </div>
             <div class="app-acct-row" onclick="doSignOut()">
@@ -2258,6 +2309,15 @@ function openTutorDetail(tutorId) {
         <button class="td-btn-book" onclick="openBooking('${t.id}')">Book a Session</button>
         <button class="td-btn-msg"  onclick="openConvoWith('${t.id}','${t.name}')">Message</button>
       </div>
+      <div class="td-review-section" id="review-section-${t.id}">
+        <div class="td-review-title">Leave a Review</div>
+        <div class="td-stars" id="stars-${t.id}">
+          ${[1,2,3,4,5].map(n => `<span class="td-star" data-n="${n}" onclick="setReviewStar('${t.id}',${n})">☆</span>`).join('')}
+        </div>
+        <textarea class="td-review-inp" id="review-inp-${t.id}" placeholder="Share your experience with ${t.name}…"></textarea>
+        <button class="td-btn-book" style="max-width:160px;font-size:13px;" onclick="submitReview('${t.id}')">Submit Review</button>
+        <div id="review-msg-${t.id}" style="font-size:12px;margin-top:8px;"></div>
+      </div>
     </div>
   `;
   switchPanel('tutor-detail', null);
@@ -2458,6 +2518,14 @@ async function sendMessage() {
   const content = inp.value.trim();
   if (!content || !activeConvoTutorId) return;
   inp.value = '';
+  // Show optimistic message immediately
+  const box = document.getElementById('convo-messages');
+  const time = new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+  box.innerHTML += `<div style="display:flex;flex-direction:column;align-items:flex-end">
+    <div class="convo-bubble mine">${content}</div>
+    <div class="convo-bubble-time" style="align-self:flex-end">${time}</div>
+  </div>`;
+  box.scrollTop = box.scrollHeight;
   const { error } = await sb.from('messages').insert({
     sender_id: appUser.id,
     recipient_id: appUser.id,
@@ -2465,8 +2533,10 @@ async function sendMessage() {
     content,
     read: true
   });
-  if (error) { console.error('Message send error:', error); return; }
-  await loadConvoMessages();
+  if (error) {
+    console.error('Message send error:', JSON.stringify(error));
+    box.innerHTML += `<div style="color:#e05050;font-size:11px;text-align:right;padding:4px 0">Failed to send. Check console.</div>`;
+  }
 }
 
 function filterMessages() {
@@ -2482,17 +2552,28 @@ function filterMessages() {
 //  SESSIONS
 // ══════════════════════════════════════════════════
 async function loadSessions() {
-  const { data, error } = await sb.from('sessions')
-    .select('*')
-    .eq('student_id', appUser.id)
-    .order('scheduled_at', { ascending: true });
-
+  const isTutor = appProfile?.role === 'tutor';
+  const query = sb.from('sessions').select('*').order('scheduled_at', { ascending: true });
+  if (isTutor) {
+    // Find tutor record matching this user's profile name
+    const myTutor = allTutors.find(t => t.name === appProfile?.full_name);
+    if (myTutor) {
+      query.eq('tutor_id', myTutor.id);
+    } else {
+      // No tutor record — show empty
+      document.getElementById('sessions-list').innerHTML = '<div class="app-empty">No sessions booked for your tutor profile yet.</div>';
+      return;
+    }
+  } else {
+    query.eq('student_id', appUser.id);
+  }
+  const { data, error } = await query;
   if (error) {
-    console.error('loadSessions error:', error);
-    document.getElementById('sessions-list').innerHTML = '<div class="app-empty">Could not load sessions. Check console for details.</div>';
+    console.error('loadSessions error:', JSON.stringify(error));
+    document.getElementById('sessions-list').innerHTML = '<div class="app-empty">Could not load sessions.</div>';
     return;
   }
-  renderSessions(data || []);
+  renderSessions(data || [], isTutor);
 }
 
 function sesTab(filter, el) {
@@ -2502,11 +2583,11 @@ function sesTab(filter, el) {
   loadSessions();
 }
 
-function renderSessions(sessions) {
+function renderSessions(sessions, isTutor=false) {
   const list = document.getElementById('sessions-list');
   const filtered = sessions.filter(s => sesFilter === 'upcoming' ? s.status === 'upcoming' : s.status !== 'upcoming');
   if (!filtered.length) {
-    list.innerHTML = `<div class="app-empty">${sesFilter === 'upcoming' ? 'No upcoming sessions. Book one below!' : 'No past sessions yet.'}</div>`;
+    list.innerHTML = `<div class="app-empty">${sesFilter === 'upcoming' ? 'No upcoming sessions.' : 'No past sessions yet.'}</div>`;
     return;
   }
   list.innerHTML = filtered.map(s => {
@@ -2519,7 +2600,7 @@ function renderSessions(sessions) {
       <div class="app-sess-card" style="${!isUpcoming ? 'opacity:.6' : ''}">
         <div class="app-sess-av" style="background:${tutor.bg_gradient || '#1a3a5c'}">${tutor.emoji || '🌟'}</div>
         <div class="app-sess-info">
-          <div class="app-sess-name">${tutor.name || 'Tutor'} — ${s.subject || ''}</div>
+          <div class="app-sess-name">${isTutor ? ('Student session — ' + (s.subject || '')) : ((tutor.name || 'Tutor') + ' — ' + (s.subject || ''))}</div>
           <div class="app-sess-detail">
             <span>📅 ${dateStr}</span>
             <span>⏰ ${timeStr}</span>
@@ -2529,6 +2610,7 @@ function renderSessions(sessions) {
         <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
           <div class="app-sess-status" style="${s.status === 'completed' ? 'background:rgba(45,122,79,.1);color:#3a9e67;' : s.status === 'cancelled' ? 'background:rgba(192,57,43,.1);color:#e05050;' : ''}">${s.status === 'completed' ? 'Completed' : s.status === 'cancelled' ? 'Cancelled' : 'Upcoming'}</div>
           ${isUpcoming ? `<button class="app-sess-book" style="font-size:10px;padding:6px 12px;" onclick="cancelSession('${s.id}')">Cancel</button>` : ''}
+          <button class="app-sess-book" style="font-size:10px;padding:6px 12px;background:rgba(201,168,76,.15);color:var(--gold-l);" onclick="openTutorDetail('${s.tutor_id}')">View Tutor</button>
         </div>
       </div>`;
   }).join('');
@@ -2543,6 +2625,8 @@ async function cancelSession(id) {
 // ══════════════════════════════════════════════════
 //  ACCOUNT
 // ══════════════════════════════════════════════════
+let viewingRole = null; // 'student' or 'tutor' — the tab currently shown
+
 function renderAccountPanel() {
   if (!appProfile) return;
   document.getElementById('acct-name').textContent  = appProfile.full_name || '—';
@@ -2551,6 +2635,68 @@ function renderAccountPanel() {
   document.getElementById('acct-av').textContent    = appProfile.role === 'tutor' ? '🧑‍🏫' : '👤';
   document.getElementById('acct-edit-sub').textContent = appProfile.full_name || '';
   document.getElementById('edit-name').value = appProfile.full_name || '';
+  // Default to their real role
+  if (!viewingRole) viewingRole = appProfile.role || 'student';
+  switchRole(viewingRole);
+}
+
+function switchRole(role) {
+  viewingRole = role;
+  document.getElementById('acct-rows-student').style.display = role === 'student' ? '' : 'none';
+  document.getElementById('acct-rows-tutor').style.display   = role === 'tutor'   ? '' : 'none';
+  document.getElementById('role-toggle-student').classList.toggle('active', role === 'student');
+  document.getElementById('role-toggle-tutor').classList.toggle('active', role === 'tutor');
+  if (role === 'tutor') loadTutorEarnings();
+}
+
+async function loadTutorEarnings() {
+  const myTutor = allTutors.find(t => t.name === appProfile?.full_name);
+  if (!myTutor) return;
+  const { data } = await sb.from('sessions')
+    .select('rate,status')
+    .eq('tutor_id', myTutor.id)
+    .eq('status', 'completed');
+  const total = (data || []).reduce((sum, s) => sum + (s.rate || 0), 0);
+  const count = (data || []).length;
+  document.getElementById('tutor-earnings').textContent = '$' + total.toFixed(0);
+  document.getElementById('tutor-earnings-sub').textContent = count + ' session' + (count !== 1 ? 's' : '') + ' completed';
+}
+
+// ── REVIEWS ────────────────────────────────────────
+let reviewStars = {};
+
+function setReviewStar(tutorId, n) {
+  reviewStars[tutorId] = n;
+  document.querySelectorAll(`#stars-${tutorId} .td-star`).forEach((s, i) => {
+    s.textContent = i < n ? '★' : '☆';
+    s.style.color = i < n ? 'var(--gold)' : 'var(--muted)';
+  });
+}
+
+async function submitReview(tutorId) {
+  const rating  = reviewStars[tutorId] || 0;
+  const comment = document.getElementById(`review-inp-${tutorId}`)?.value.trim() || '';
+  const msg     = document.getElementById(`review-msg-${tutorId}`);
+  if (!rating) { msg.style.color='#e05050'; msg.textContent = 'Please select a star rating.'; return; }
+  msg.style.color = 'var(--muted)'; msg.textContent = 'Submitting…';
+  const { error } = await sb.from('reviews').insert({
+    tutor_id: tutorId,
+    student_id: appUser.id,
+    rating,
+    comment
+  });
+  if (error) {
+    // Table may not exist yet — show graceful message
+    console.error('Review error:', JSON.stringify(error));
+    msg.style.color = '#e05050';
+    msg.textContent = error.code === '42P01' ? 'Reviews table not set up yet. Run supabase-fix.sql.' : error.message;
+    return;
+  }
+  msg.style.color = '#3a9e67';
+  msg.textContent = '✓ Review submitted! Thank you.';
+  document.getElementById(`review-inp-${tutorId}`).value = '';
+  reviewStars[tutorId] = 0;
+  document.querySelectorAll(`#stars-${tutorId} .td-star`).forEach(s => { s.textContent='☆'; s.style.color=''; });
 }
 
 function openEditProfile() {
